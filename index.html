@@ -24,6 +24,11 @@ html,body{width:100%;min-height:100vh;background:#0a0d1a;display:flex;align-item
 .pface canvas.art{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:2}
 .pcontent{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:clamp(24px,6%,52px) clamp(18px,6%,46px);z-index:3}
 .pnum{position:absolute;bottom:14px;width:100%;text-align:center;font-size:11px;color:#8878b0;letter-spacing:4px;z-index:4}
+.page-left-inner{position:relative;width:100%;height:100%}
+.page-left canvas.bg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.page-left canvas.art{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:2}
+.page-left .pcontent{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:clamp(24px,6%,52px) clamp(18px,6%,46px);z-index:3}
+.page-left .pnum{position:absolute;bottom:14px;width:100%;text-align:center;font-size:11px;color:#8878b0;letter-spacing:4px;z-index:4}
 .cover-title{font-family:'Cinzel',serif;font-size:clamp(18px,3.8vw,34px);font-weight:700;color:#2a1845;letter-spacing:2px;line-height:1.25}
 .cover-title em{font-style:italic;color:#5a2888;font-family:'Lora',serif}
 .divider{width:60px;height:1px;background:rgba(90,50,140,.4);margin:12px auto}
@@ -47,10 +52,12 @@ html,body{width:100%;min-height:100vh;background:#0a0d1a;display:flex;align-item
   <div class="book">
     <div class="spine"></div>
     <div class="page-left">
-      <canvas class="bg" id="bgL" width="370" height="500"></canvas>
-      <canvas class="art" id="artL" width="370" height="500"></canvas>
-      <div class="pcontent" id="ctL"></div>
-      <div class="pnum" id="nmL"></div>
+      <div class="page-left-inner">
+        <canvas class="bg" id="bgL" width="370" height="500"></canvas>
+        <canvas class="art" id="artL" width="370" height="500"></canvas>
+        <div class="pcontent" id="ctL"></div>
+        <div class="pnum" id="nmL"></div>
+      </div>
     </div>
     <div class="prw" id="prw">
       <div class="pface front">
@@ -74,7 +81,6 @@ html,body{width:100%;min-height:100vh;background:#0a0d1a;display:flex;align-item
 </div>
 
 <script>
-// ── Starfield ────────────────────────────────────────────────────────────────
 (function(){
   const c=document.getElementById('starfield'),x=c.getContext('2d');let stars=[];
   function resize(){c.width=window.innerWidth;c.height=window.innerHeight;stars=Array.from({length:140},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.2+.2,a:Math.random(),da:(Math.random()-.5)*.006}))}
@@ -82,7 +88,6 @@ html,body{width:100%;min-height:100vh;background:#0a0d1a;display:flex;align-item
   resize();draw();window.addEventListener('resize',resize);
 })();
 
-// ── Page background ───────────────────────────────────────────────────────────
 function clamp(v){return Math.max(0,Math.min(255,v|0))}
 function drawBg(cv,type){
   const c=cv.getContext('2d'),W=cv.width,H=cv.height;
@@ -96,7 +101,6 @@ function drawBg(cv,type){
   [[18,18,0],[W-18,18,Math.PI/2],[W-18,H-18,Math.PI],[18,H-18,-Math.PI/2]].forEach(([x,y,a])=>{c.save();c.translate(x,y);c.rotate(a);c.strokeStyle='rgba(80,40,130,.45)';c.lineWidth=.9;c.beginPath();c.moveTo(14,0);c.lineTo(0,0);c.lineTo(0,14);c.stroke();c.fillStyle='rgba(80,40,130,.4)';c.save();c.rotate(Math.PI/4);c.fillRect(-2.5,-2.5,5,5);c.restore();c.restore()});
 }
 
-// ── Drawing primitives ────────────────────────────────────────────────────────
 function twinkle(c,W,H,n=12){
   const pts=[[.1,.06],[.88,.04],[.93,.18],[.05,.3],[.96,.86],[.04,.78],[.91,.9],[.5,.03],[.48,.97],[.77,.13],[.2,.87],[.03,.52],[.95,.52],[.62,.07]];
   for(let i=0;i<Math.min(n,pts.length);i++){c.save();c.globalAlpha=.2+Math.random()*.4;c.fillStyle='#c8d0ff';c.beginPath();c.arc(pts[i][0]*W,pts[i][1]*H,.4+Math.random()*.6,0,Math.PI*2);c.fill();c.restore()}
@@ -138,27 +142,19 @@ function magicSparkles(c,W,H,n,col){
   col=col||'#e0d0ff';for(let i=0;i<n;i++){const x=W*(.15+Math.random()*.7),y=H*(.1+Math.random()*.5);starShape(c,x,y,4+Math.random()*4,2,4,col,.1+Math.random()*.2)}
 }
 
-// ── Characters ────────────────────────────────────────────────────────────────
 function princess(c,cx,cy,sc,a){
   sc=sc||1;a=a||.9;c.save();c.translate(cx,cy);c.scale(sc,sc);c.globalAlpha=a;
-  // dress
   c.fillStyle='#c060a0';c.beginPath();c.moveTo(-2,-28);c.bezierCurveTo(-22,-10,-28,10,-22,30);c.lineTo(22,30);c.bezierCurveTo(28,10,22,-10,2,-28);c.fill();
   c.fillStyle='#e080c0';c.globalAlpha=a*.35;c.beginPath();c.moveTo(-1,-26);c.bezierCurveTo(-8,-12,-10,4,-6,22);c.lineTo(-2,22);c.bezierCurveTo(-6,4,-4,-12,1,-26);c.fill();c.globalAlpha=a;
-  // bodice
   c.fillStyle='#a04080';c.beginPath();c.roundRect(-7,-38,14,12,2);c.fill();
-  // arms
   c.strokeStyle='#e8b090';c.lineWidth=4;c.lineCap='round';
   c.beginPath();c.moveTo(-7,-34);c.lineTo(-16,-26);c.stroke();
   c.beginPath();c.moveTo(7,-34);c.lineTo(16,-26);c.stroke();
-  // head
   c.fillStyle='#e8b090';c.beginPath();c.arc(0,-46,10,0,Math.PI*2);c.fill();
-  // hair
   c.fillStyle='#3a1808';c.beginPath();c.arc(0,-46,10,-Math.PI,0);c.bezierCurveTo(12,-36,18,-10,14,20);c.lineTo(10,20);c.bezierCurveTo(14,-10,8,-36,0,-46);c.fill();
   c.beginPath();c.bezierCurveTo(-12,-36,-18,-10,-14,20);c.lineTo(-10,20);c.bezierCurveTo(-14,-10,-8,-36,0,-46);c.fill();
-  // crown
   c.fillStyle='#f0c030';c.beginPath();c.moveTo(-9,-55);c.lineTo(-9,-50);c.lineTo(-4,-53);c.lineTo(0,-56);c.lineTo(4,-53);c.lineTo(9,-50);c.lineTo(9,-55);c.closePath();c.fill();
   c.fillStyle='#fff0a0';c.beginPath();c.arc(0,-53,2,0,Math.PI*2);c.fill();
-  // face
   c.fillStyle='#3a1808';c.globalAlpha=a*.8;
   c.beginPath();c.arc(-3,-47,1.2,0,Math.PI*2);c.fill();c.beginPath();c.arc(3,-47,1.2,0,Math.PI*2);c.fill();
   c.strokeStyle='#c06080';c.lineWidth=1;c.beginPath();c.arc(0,-44,2.5,.2,Math.PI-.2);c.stroke();c.restore();
@@ -166,35 +162,28 @@ function princess(c,cx,cy,sc,a){
 
 function knight(c,cx,cy,sc,a,facingLeft){
   sc=sc||1;a=a||.9;c.save();c.translate(cx,cy);c.scale(facingLeft?-sc:sc,sc);c.globalAlpha=a;
-  // legs
   c.fillStyle='#607080';c.beginPath();c.roundRect(-9,20,8,22,2);c.fill();c.beginPath();c.roundRect(1,20,8,22,2);c.fill();
   c.fillStyle='#3a2810';c.beginPath();c.roundRect(-10,38,10,8,2);c.fill();c.beginPath();c.roundRect(0,38,10,8,2);c.fill();
-  // armour body
   c.fillStyle='#8090a8';c.beginPath();c.roundRect(-11,-10,22,32,3);c.fill();
   c.fillStyle='#b0c0d0';c.globalAlpha=a*.3;c.beginPath();c.roundRect(-8,-8,8,26,2);c.fill();c.globalAlpha=a;
   c.fillStyle='#3a2810';c.beginPath();c.roundRect(-11,18,22,5,1);c.fill();
   c.fillStyle='#e0c020';c.beginPath();c.arc(0,20,3,0,Math.PI*2);c.fill();
-  // pauldrons
   c.fillStyle='#7080a0';c.beginPath();c.ellipse(-13,-8,8,5,-.3,0,Math.PI*2);c.fill();c.beginPath();c.ellipse(13,-8,8,5,.3,0,Math.PI*2);c.fill();
-  // sword arm
   c.strokeStyle='#8090a8';c.lineWidth=6;c.lineCap='round';c.beginPath();c.moveTo(13,-8);c.lineTo(22,10);c.stroke();
   c.save();c.translate(22,10);c.rotate(.5);
   c.fillStyle='#c8d0d8';c.beginPath();c.roundRect(-2,-28,4,28,1);c.fill();
   c.fillStyle='#e0c020';c.beginPath();c.roundRect(-6,-2,12,4,1);c.fill();
   c.fillStyle='#8a6020';c.beginPath();c.roundRect(-2,2,4,9,2);c.fill();
   c.fillStyle='#fff';c.globalAlpha=a*.5;c.beginPath();c.roundRect(-1,-26,2,14,1);c.fill();c.globalAlpha=a;c.restore();
-  // shield arm
   c.strokeStyle='#8090a8';c.lineWidth=5;c.lineCap='round';c.beginPath();c.moveTo(-13,-8);c.lineTo(-20,8);c.stroke();
   c.save();c.translate(-20,8);
   c.fillStyle='#c03020';c.beginPath();c.moveTo(-8,-12);c.lineTo(8,-12);c.lineTo(8,4);c.quadraticCurveTo(0,14,-8,4);c.closePath();c.fill();
   c.strokeStyle='#e0c020';c.lineWidth=1.5;c.stroke();c.beginPath();c.moveTo(0,-11);c.lineTo(0,6);c.stroke();c.beginPath();c.moveTo(-7,-3);c.lineTo(7,-3);c.stroke();c.restore();
-  // neck, helmet
   c.fillStyle='#e8b090';c.beginPath();c.roundRect(-4,-18,8,9,2);c.fill();
   c.fillStyle='#8090a8';c.beginPath();c.arc(0,-26,12,0,Math.PI*2);c.fill();
   c.fillStyle='#7080a0';c.beginPath();c.arc(0,-26,12,Math.PI,0);c.fill();
   c.fillStyle='#506070';c.beginPath();c.roundRect(-10,-28,20,6,2);c.fill();
   c.fillStyle='#c0d0e0';c.globalAlpha=a*.25;c.beginPath();c.arc(-3,-30,4,0,Math.PI*2);c.fill();c.globalAlpha=a;
-  // plume
   c.strokeStyle='#e03030';c.lineWidth=3;c.lineCap='round';
   c.beginPath();c.moveTo(2,-38);c.quadraticCurveTo(10,-50,6,-58);c.stroke();
   c.beginPath();c.moveTo(4,-40);c.quadraticCurveTo(12,-52,8,-60);c.stroke();c.restore();
@@ -202,21 +191,16 @@ function knight(c,cx,cy,sc,a,facingLeft){
 
 function dragon(c,cx,cy,sc,a){
   sc=sc||1;a=a||.88;c.save();c.translate(cx,cy);c.scale(sc,sc);c.globalAlpha=a;
-  // tail
   c.strokeStyle='#206030';c.lineWidth=10;c.lineCap='round';c.beginPath();c.moveTo(30,20);c.quadraticCurveTo(65,40,75,20);c.stroke();
   c.lineWidth=6;c.beginPath();c.moveTo(75,20);c.quadraticCurveTo(88,5,82,-5);c.stroke();
   c.fillStyle='#a0c020';c.globalAlpha=a*.55;[[55,22],[68,28],[78,14]].forEach(([x,y])=>{c.beginPath();c.moveTo(x,y);c.lineTo(x-4,y-10);c.lineTo(x+4,y-10);c.closePath();c.fill()});c.globalAlpha=a;
-  // body
   c.fillStyle='#287040';c.beginPath();c.ellipse(5,10,32,22,-.1,0,Math.PI*2);c.fill();
   c.fillStyle='#30904a';c.globalAlpha=a*.45;c.beginPath();c.ellipse(-2,4,20,14,-.1,0,Math.PI*2);c.fill();c.globalAlpha=a;
   c.fillStyle='#a0e060';c.globalAlpha=a*.45;c.beginPath();c.ellipse(8,16,16,10,0,0,Math.PI*2);c.fill();c.globalAlpha=a;
-  // wing
   c.fillStyle='#186030';c.globalAlpha=a*.65;c.beginPath();c.moveTo(-10,-4);c.bezierCurveTo(-40,-30,-55,-10,-45,8);c.bezierCurveTo(-35,12,-20,4,-10,-4);c.fill();
   c.strokeStyle='#104020';c.lineWidth=.8;c.globalAlpha=a*.35;[[-30,-18],[-42,-6],[-36,0]].forEach(([x,y])=>{c.beginPath();c.moveTo(-10,-4);c.lineTo(x,y);c.stroke()});c.globalAlpha=a;
-  // legs
   c.strokeStyle='#1e5828';c.lineWidth=5;c.lineCap='round';c.beginPath();c.moveTo(-8,28);c.lineTo(-14,44);c.stroke();c.beginPath();c.moveTo(18,30);c.lineTo(22,44);c.stroke();
   c.fillStyle='#105020';[[-18,44],[-14,44],[-10,44]].forEach(([x,y])=>{c.beginPath();c.moveTo(x-2,y);c.lineTo(x,y+8);c.lineTo(x+2,y);c.fill()});[[18,44],[22,44],[26,44]].forEach(([x,y])=>{c.beginPath();c.moveTo(x-2,y);c.lineTo(x,y+8);c.lineTo(x+2,y);c.fill()});
-  // neck + head
   c.fillStyle='#287040';c.beginPath();c.ellipse(-16,-8,12,8,-.6,0,Math.PI*2);c.fill();
   c.beginPath();c.ellipse(-30,-18,18,12,-.2,0,Math.PI*2);c.fill();
   c.fillStyle='#1e6030';c.beginPath();c.ellipse(-44,-18,8,6,.1,0,Math.PI*2);c.fill();
@@ -225,7 +209,6 @@ function dragon(c,cx,cy,sc,a){
   c.fillStyle='#101010';c.beginPath();c.ellipse(-24,-22,2,3,0,0,Math.PI*2);c.fill();
   c.fillStyle='#fff';c.globalAlpha=a*.75;c.beginPath();c.arc(-25,-24,1.2,0,Math.PI*2);c.fill();c.globalAlpha=a;
   c.fillStyle='#a0c020';[[-18,-28],[-25,-32],[-32,-30]].forEach(([x,y])=>{c.beginPath();c.moveTo(x,y);c.lineTo(x+2,y-10);c.lineTo(x+5,y);c.fill()});
-  // fire breath
   c.save();c.translate(-52,-16);
   const fg=c.createLinearGradient(0,0,-30,0);fg.addColorStop(0,'rgba(255,160,20,.6)');fg.addColorStop(.5,'rgba(255,80,10,.35)');fg.addColorStop(1,'rgba(255,200,50,.0)');
   c.fillStyle=fg;c.beginPath();c.moveTo(0,-4);c.bezierCurveTo(-15,-8,-28,-5,-34,0);c.bezierCurveTo(-28,5,-15,8,0,4);c.closePath();c.fill();
@@ -242,14 +225,11 @@ function castle(c,cx,cy,sc,a){
   c.globalAlpha=a;
   c.fillStyle='#8070a0';[-24,-8,8,24].forEach(x=>{c.beginPath();c.roundRect(x-7,-16,14,16,2);c.fill()});
   c.fillStyle='#6858a0';c.beginPath();c.roundRect(-W/2,-16,W,4,1);c.fill();
-  // window glow
   c.fillStyle='#ffe8a0';c.globalAlpha=a*.65;c.beginPath();c.roundRect(-8,18,16,20,8);c.fill();
   c.globalAlpha=a;c.strokeStyle='#604a7a';c.lineWidth=1;c.beginPath();c.roundRect(-8,18,16,20,8);c.stroke();
   c.strokeStyle='#604a7a';c.lineWidth=.8;c.beginPath();c.moveTo(0,18);c.lineTo(0,38);c.stroke();c.beginPath();c.moveTo(-8,28);c.lineTo(8,28);c.stroke();
-  // door
   c.fillStyle='#3a2850';c.beginPath();c.moveTo(-12,H);c.lineTo(-12,H-22);c.arc(0,H-22,12,-Math.PI,0);c.lineTo(12,H);c.closePath();c.fill();
   c.fillStyle='#8060a0';[[-9,H-28],[9,H-28]].forEach(([x,y])=>{c.beginPath();c.arc(x,y,2,0,Math.PI*2);c.fill()});
-  // flag
   c.strokeStyle='#8060a0';c.lineWidth=1.2;c.beginPath();c.moveTo(0,-16);c.lineTo(0,-36);c.stroke();
   c.fillStyle='#e03030';c.beginPath();c.moveTo(0,-36);c.lineTo(18,-30);c.lineTo(0,-24);c.closePath();c.fill();c.restore();
 }
@@ -269,7 +249,6 @@ function horse(c,cx,cy,sc,a,facing){
   c.strokeStyle='#7a5020';c.lineWidth=5;c.beginPath();c.moveTo(26,-4);c.bezierCurveTo(42,0,46,16,40,28);c.stroke();c.restore();
 }
 
-// ── Art per spread ────────────────────────────────────────────────────────────
 const ART={
   '0L'(c,W,H){
     twinkle(c,W,H,14);moonFull(c,W*.2,H*.25,22,.15);
@@ -379,7 +358,6 @@ const ART={
 
 function drawArt(cv,si,side){const c=cv.getContext('2d');c.clearRect(0,0,cv.width,cv.height);const fn=ART[`${si}${side}`];if(fn)fn(c,cv.width,cv.height)}
 
-// ── Spreads ───────────────────────────────────────────────────────────────────
 const S=[
   {L:{type:'story',h:''},R:{type:'cover',h:`<div class="cover-title"><em>Sir Rana</em><br>&amp; the Princess <em>Avni</em></div><div class="divider"></div><div class="cover-sub">A Tale of Courage &amp; True Love</div>`},n:['','']},
   {L:{type:'story',h:`<div class="story">Once upon a time,<br>in the Kingdom of <em>Sunhaven</em>,<br>there lived a kind and<br>clever princess named <strong>Avni</strong>.</div>`},R:{type:'story',h:`<div class="story">She was so bright and brave<br>that even the stars would<br>lean down just to listen<br>to her laugh.</div>`},n:['i','ii']},
@@ -391,7 +369,6 @@ const S=[
   {L:{type:'story',h:`<div class="story">They rode home together<br>through the golden sunrise,<br>and all of Sunhaven<br>danced and cheered with joy!</div>`},R:{type:'finale',h:`<div class="finale">And they lived<br>Happily Ever After.<em>The End ✦</em></div>`},n:['xiii','']}
 ];
 
-// ── Render ────────────────────────────────────────────────────────────────────
 const prw=document.getElementById('prw');
 const bgL=document.getElementById('bgL'),bgF=document.getElementById('bgF'),bgB=document.getElementById('bgB');
 const artL=document.getElementById('artL'),artF=document.getElementById('artF'),artB=document.getElementById('artB');
