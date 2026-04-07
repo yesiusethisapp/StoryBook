@@ -1,692 +1,391 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Avni & Rana — A Love Story</title>
-		<link
-			href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-			rel="stylesheet"
-		/>
-		<style>
-			* {
-				box-sizing: border-box;
-				margin: 0;
-				padding: 0;
-			}
-			html,
-			body {
-				width: 100%;
-				height: 100%;
-				min-height: 100vh;
-				background: #0c0602;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				font-family: "Cormorant Garamond", serif;
-				overflow: hidden;
-			}
-			#starfield {
-				position: fixed;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				pointer-events: none;
-				z-index: 0;
-			}
-			.scene {
-				position: relative;
-				z-index: 1;
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-			}
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Avni & Rana — A Love Story</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; min-height: 100vh; background: #0c0602;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif; overflow: hidden;
+    }
+    #ar-stars { position: fixed; inset: 0; pointer-events: none; }
+    .scene {
+      position: relative; z-index: 1; display: flex;
+      flex-direction: column; align-items: center; padding: 28px 16px 20px;
+    }
+    .book {
+      position: relative; width: min(740px, 96vw); height: clamp(320px, 50vw, 500px);
+      perspective: 3200px; filter: drop-shadow(0 28px 60px rgba(0,0,0,.9));
+    }
+    .spine {
+      position: absolute; left: 50%; top: 0; width: 12px; height: 100%;
+      transform: translateX(-50%);
+      background: linear-gradient(to right, #2a0e04, #7a3010, #9a4818, #7a3010, #2a0e04);
+      z-index: 50; box-shadow: 0 0 16px rgba(0,0,0,.7);
+    }
+    .page-left {
+      position: absolute; left: 0; top: 0; width: 50%; height: 100%;
+      border-radius: 3px 0 0 3px; overflow: hidden;
+    }
+    .page-left::after {
+      content: ''; position: absolute; top: 0; right: 0; width: 28px; height: 100%;
+      background: linear-gradient(to right, transparent, rgba(0,0,0,.18));
+      pointer-events: none; z-index: 5;
+    }
+    .prw {
+      position: absolute; right: 0; top: 0; width: 50%; height: 100%;
+      transform-origin: left center; transform-style: preserve-3d; z-index: 10;
+    }
+    .prw.go { transition: transform 1.5s cubic-bezier(.645,.045,.355,1); }
+    .prw.flipped { transform: rotateY(-180deg); }
+    .pface { position: absolute; inset: 0; backface-visibility: hidden; overflow: hidden; }
+    .pface.front { border-radius: 0 3px 3px 0; box-shadow: 4px 0 18px rgba(0,0,0,.35); }
+    .pface.back { transform: rotateY(180deg); border-radius: 3px 0 0 3px; }
+    .pface canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .pface svg.ill { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
+    .pcontent {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      padding: clamp(28px,6%,54px) clamp(20px,6%,48px); z-index: 3;
+    }
+    .pnum { position: absolute; bottom: 12px; width: 100%; text-align: center; font-size: 11px; color: #9a7050; letter-spacing: 4px; z-index: 4; }
+    .cover-title { font-family: 'Playfair Display', serif; font-size: clamp(24px,4vw,40px); font-weight: 700; color: #42160a; letter-spacing: 3px; line-height: 1.2; }
+    .cover-title em { font-style: italic; color: #6e2010; }
+    .divider { width: 56px; height: 1px; background: rgba(110,60,20,.45); margin: 14px auto; }
+    .cover-sub { font-size: 11px; letter-spacing: 6px; text-transform: uppercase; color: #7a4828; font-weight: 300; }
+    .story { font-size: clamp(14px,2.2vw,21px); line-height: 2; color: #2a1006; font-weight: 400; }
+    .story em { font-style: italic; color: #6a1e08; font-size: clamp(15px,2.4vw,22px); }
+    .gap { display: block; height: 14px; }
+    .finale { font-family: 'Playfair Display', serif; font-size: clamp(22px,4vw,34px); font-weight: 400; font-style: italic; color: #42160a; letter-spacing: 2px; }
+    .nav { margin-top: 22px; display: flex; align-items: center; gap: 22px; }
+    .nbtn {
+      background: transparent; border: 1px solid rgba(195,130,70,.35); color: #c8905a;
+      padding: 8px 22px; cursor: pointer; font-family: 'Cormorant Garamond', serif;
+      font-size: 14px; letter-spacing: 3px; text-transform: uppercase;
+      transition: all .3s; border-radius: 2px; outline: none;
+    }
+    .nbtn:hover:not(:disabled) { background: rgba(200,140,80,.1); border-color: rgba(195,130,70,.7); }
+    .nbtn:disabled { opacity: .18; cursor: default; }
+    .nind { font-size: 13px; color: rgba(195,140,90,.45); letter-spacing: 2px; min-width: 52px; text-align: center; }
+  </style>
+</head>
+<body>
+  <canvas id="ar-stars"></canvas>
+  <div class="scene">
+    <div class="book">
+      <div class="spine"></div>
+      <div class="page-left">
+        <canvas id="cvL" width="370" height="500"></canvas>
+        <svg class="ill" id="ilL" viewBox="0 0 370 500" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="pcontent" id="ctL"></div>
+        <div class="pnum" id="nmL"></div>
+      </div>
+      <div class="prw" id="prw">
+        <div class="pface front">
+          <canvas id="cvF" width="370" height="500"></canvas>
+          <svg class="ill" id="ilF" viewBox="0 0 370 500" xmlns="http://www.w3.org/2000/svg"></svg>
+          <div class="pcontent" id="ctF"></div>
+          <div class="pnum" id="nmF"></div>
+        </div>
+        <div class="pface back">
+          <canvas id="cvB" width="370" height="500"></canvas>
+          <svg class="ill" id="ilB" viewBox="0 0 370 500" xmlns="http://www.w3.org/2000/svg"></svg>
+          <div class="pcontent" id="ctB"></div>
+        </div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="nbtn" id="bPrev">← Back</button>
+      <span class="nind" id="nind">1 / 8</span>
+      <button class="nbtn" id="bNext">Next →</button>
+    </div>
+  </div>
 
-			/* Book */
-			.book {
-				position: relative;
-				width: 740px;
-				height: 500px;
-				perspective: 3200px;
-				filter: drop-shadow(0 35px 70px rgba(0, 0, 0, 0.95));
-			}
+<script>
+(function(){
 
-			/* Spine */
-			.spine {
-				position: absolute;
-				left: 50%;
-				top: 0;
-				width: 12px;
-				height: 100%;
-				transform: translateX(-50%);
-				background: linear-gradient(
-					to right,
-					#2a0e04,
-					#7a3010,
-					#9a4818,
-					#7a3010,
-					#2a0e04
-				);
-				z-index: 50;
-				box-shadow: 0 0 16px rgba(0, 0, 0, 0.7);
-			}
+// ── Starfield ──────────────────────────────────────────────
+const sc = document.getElementById('ar-stars');
+const sx = sc.getContext('2d');
+let stars = [];
+function resizeStar(){
+  sc.width = window.innerWidth; sc.height = window.innerHeight;
+  stars = Array.from({length:110}, () => ({
+    x: Math.random()*sc.width, y: Math.random()*sc.height,
+    r: Math.random()*1.1+.2, a: Math.random(), da: (Math.random()-.5)*.007
+  }));
+}
+function drawStars(){
+  sx.clearRect(0,0,sc.width,sc.height);
+  stars.forEach(s => {
+    s.a = Math.max(.05, Math.min(1, s.a+s.da));
+    if(s.a<=.05||s.a>=1) s.da*=-1;
+    sx.globalAlpha = s.a*.5; sx.fillStyle='#ffe8c0';
+    sx.beginPath(); sx.arc(s.x,s.y,s.r,0,Math.PI*2); sx.fill();
+  });
+  sx.globalAlpha=1; requestAnimationFrame(drawStars);
+}
+resizeStar(); drawStars();
+window.addEventListener('resize', resizeStar);
 
-			/* Left page */
-			.page-left {
-				position: absolute;
-				left: 0;
-				top: 0;
-				width: 364px;
-				height: 100%;
-				border-radius: 3px 0 0 3px;
-				overflow: hidden;
-			}
-			.page-left::after {
-				content: "";
-				position: absolute;
-				top: 0;
-				right: 0;
-				width: 28px;
-				height: 100%;
-				background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.18));
-				pointer-events: none;
-				z-index: 5;
-			}
+// ── Canvas page texture ────────────────────────────────────
+function drawTex(cv, type){
+  const ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
+  ctx.fillStyle = type==='cover' ? '#f7e8cc' : type==='finale' ? '#fff2ec' : '#fdf6e8';
+  ctx.fillRect(0,0,W,H);
+  const id=ctx.getImageData(0,0,W,H), d=id.data;
+  for(let i=0;i<d.length;i+=4){
+    const n=(Math.random()-.5)*18;
+    d[i]=clamp(d[i]+n); d[i+1]=clamp(d[i+1]+n*.88); d[i+2]=clamp(d[i+2]+n*.55);
+  }
+  ctx.putImageData(id,0,0);
+  const g=ctx.createRadialGradient(W/2,H/2,H*.2,W/2,H/2,H*.9);
+  g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(1,`rgba(50,18,4,${type==='cover'?.22:.1})`);
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  const m=20;
+  ctx.strokeStyle='rgba(110,62,24,.28)'; ctx.lineWidth=.9; ctx.strokeRect(m,m,W-2*m,H-2*m);
+  ctx.strokeStyle='rgba(110,62,24,.13)'; ctx.lineWidth=.5; ctx.strokeRect(m+5,m+5,W-2*(m+5),H-2*(m+5));
+  [[m,m,0],[W-m,m,Math.PI/2],[W-m,H-m,Math.PI],[m,H-m,-Math.PI/2]].forEach(([x,y,a])=>corner(ctx,x,y,a));
+}
+function clamp(v){ return Math.max(0,Math.min(255,v|0)); }
+function corner(ctx,x,y,a){
+  ctx.save(); ctx.translate(x,y); ctx.rotate(a);
+  ctx.strokeStyle='rgba(110,62,24,.5)'; ctx.lineWidth=.9;
+  ctx.beginPath(); ctx.moveTo(12,0); ctx.lineTo(0,0); ctx.lineTo(0,12); ctx.stroke();
+  ctx.fillStyle='rgba(110,62,24,.45)';
+  ctx.save(); ctx.rotate(Math.PI/4); ctx.fillRect(-2.2,-2.2,4.4,4.4); ctx.restore();
+  ctx.restore();
+}
 
-			/* Right page wrapper (3D flip) */
-			.prw {
-				position: absolute;
-				right: 0;
-				top: 0;
-				width: 364px;
-				height: 100%;
-				transform-origin: left center;
-				transform-style: preserve-3d;
-				z-index: 10;
-			}
-			.prw.go {
-				transition: transform 1.5s cubic-bezier(0.645, 0.045, 0.355, 1);
-			}
-			.prw.flipped {
-				transform: rotateY(-180deg);
-			}
+// ── SVG Illustrations ──────────────────────────────────────
+function flowerSVG(x,y,r,col,op){
+  let p=`<g opacity="${op}" fill="${col}">`;
+  for(let i=0;i<6;i++){
+    const a=i*60*Math.PI/180, ex=x+r*.6*Math.cos(a), ey=y+r*.6*Math.sin(a);
+    p+=`<ellipse cx="${ex}" cy="${ey}" rx="${r*.42}" ry="${r*.22}" transform="rotate(${i*60} ${x} ${y})"/>`;
+  }
+  p+=`<circle cx="${x}" cy="${y}" r="${r*.25}"/></g>`;
+  return p;
+}
+function heartSVG(x,y,s,col,op){
+  return `<path opacity="${op}" fill="${col}" d="M${x},${y+s*.35} C${x},${y+s*.08} ${x-s},${y-s*.28} ${x-s},${y} C${x-s},${y+s*.52} ${x},${y+s*.82} ${x},${y+s} C${x},${y+s*.82} ${x+s},${y+s*.52} ${x+s},${y} C${x+s},${y-s*.28} ${x},${y+s*.08} ${x},${y+s*.35}Z"/>`;
+}
 
-			.pface {
-				position: absolute;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				backface-visibility: hidden;
-				overflow: hidden;
-			}
-			.pface.front {
-				border-radius: 0 3px 3px 0;
-				box-shadow: 4px 0 18px rgba(0, 0, 0, 0.35);
-			}
-			.pface.back {
-				transform: rotateY(180deg);
-				border-radius: 3px 0 0 3px;
-			}
+function illCover(){
+  return flowerSVG(185,80,28,'#8b3810',.16)
+    + flowerSVG(60,70,16,'#8b3810',.12) + flowerSVG(310,70,16,'#8b3810',.12)
+    + flowerSVG(60,430,16,'#8b3810',.12) + flowerSVG(310,430,16,'#8b3810',.12)
+    + `<line x1="60" y1="168" x2="310" y2="168" stroke="#7a3010" stroke-width=".6" opacity=".2"/>
+       <rect x="183" y="165" width="5" height="5" fill="#7a3010" opacity=".4" transform="rotate(45 185 168)"/>
+       <line x1="60" y1="332" x2="310" y2="332" stroke="#7a3010" stroke-width=".6" opacity=".2"/>
+       <rect x="183" y="329" width="5" height="5" fill="#7a3010" opacity=".4" transform="rotate(45 185 332)"/>`;
+}
+function illMoon(){
+  return `<circle cx="310" cy="60" r="36" fill="#f7e8cc" opacity=".18"/>
+          <circle cx="322" cy="52" r="30" fill="#f0ddb0" opacity=".22"/>
+          <path d="M295,45 Q310,40 318,55 Q300,58 295,45Z" fill="#e0c88a" opacity=".12"/>`;
+}
+function illStarScatter(){
+  const pts=[[40,35],[330,28],[350,80],[25,120],[355,350],[30,400],[340,450],[180,22],[185,478]];
+  return pts.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="${(.5+Math.random()*.6).toFixed(2)}" fill="#ffe8c0" opacity="${(.3+Math.random()*.4).toFixed(2)}"/>`).join('');
+}
+function illCandle(){
+  return `<g transform="translate(185,370)">
+    <rect x="-5" y="-38" width="10" height="38" rx="2" fill="#e8d090" opacity=".25"/>
+    <ellipse cx="0" cy="-38" rx="5" ry="8" fill="#ffcc66" opacity=".35"/>
+    <ellipse cx="0" cy="-38" rx="3" ry="5" fill="#ffeeaa" opacity=".4"/>
+    <ellipse cx="0" cy="-42" rx="1.5" ry="3" fill="#fff8cc" opacity=".5"/>
+    <ellipse cx="0" cy="-38" rx="18" ry="12" fill="#ffcc44" opacity=".07"/>
+  </g>`;
+}
+function illMoonWindow(){
+  return illMoon()
+    + `<rect x="130" y="30" width="110" height="140" rx="55" fill="none" stroke="#8b6030" stroke-width=".8" opacity=".15"/>
+       <line x1="185" y1="30" x2="185" y2="170" stroke="#8b6030" stroke-width=".6" opacity=".12"/>
+       <line x1="130" y1="100" x2="240" y2="100" stroke="#8b6030" stroke-width=".6" opacity=".12"/>`;
+}
+function illTwoFigures(){
+  return `<g opacity=".12" fill="#4a1008">
+    <circle cx="150" cy="390" r="14"/>
+    <path d="M136,405 Q150,420 164,405 L160,460 Q150,465 140,460Z"/>
+    <circle cx="220" cy="390" r="14"/>
+    <path d="M206,405 Q220,420 234,405 L230,460 Q220,465 210,460Z"/>
+    <path d="M164,415 Q185,408 206,415" stroke="#4a1008" stroke-width="1.5" fill="none" opacity=".8"/>
+  </g>`;
+}
+function illHearts(){
+  let h='';
+  [[100,60],[270,60],[50,250],[320,250],[100,440],[270,440],[185,28],[185,472]].forEach(([x,y])=>{
+    h+=heartSVG(x,y,11,'#c0406a',.12);
+  });
+  h+=`<defs><radialGradient id="hg"><stop offset="0" stop-color="#ffb0c8" stop-opacity=".08"/><stop offset="1" stop-color="#ffb0c8" stop-opacity="0"/></radialGradient></defs>
+      <rect x="0" y="0" width="370" height="500" fill="url(#hg)"/>`;
+  return h;
+}
+function illLeaves(){
+  return `<g opacity=".1" fill="#5a2808">
+    <ellipse cx="50" cy="460" rx="22" ry="10" transform="rotate(-30 50 460)"/>
+    <ellipse cx="70" cy="445" rx="18" ry="8" transform="rotate(-20 70 445)"/>
+    <ellipse cx="310" cy="455" rx="22" ry="10" transform="rotate(30 310 455)"/>
+    <ellipse cx="295" cy="440" rx="18" ry="8" transform="rotate(20 295 440)"/>
+    <ellipse cx="50" cy="55" rx="16" ry="7" transform="rotate(25 50 55)"/>
+    <ellipse cx="320" cy="55" rx="16" ry="7" transform="rotate(-25 320 55)"/>
+  </g>`;
+}
+function illCornerFlowers(){
+  return flowerSVG(45,45,10,'#8b4020',.1) + flowerSVG(325,45,10,'#8b4020',.1)
+       + flowerSVG(45,455,10,'#8b4020',.1) + flowerSVG(325,455,10,'#8b4020',.1);
+}
 
-			canvas.tex {
-				position: absolute;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				display: block;
-			}
+const illMap = {
+  '0L': ()=>'',
+  '0R': illCover,
+  '1L': ()=>illStarScatter()+illLeaves(),
+  '1R': ()=>illMoon()+illStarScatter(),
+  '2L': ()=>illMoon()+illStarScatter()+illCandle(),
+  '2R': ()=>illCornerFlowers()+illStarScatter(),
+  '3L': ()=>illMoonWindow()+illStarScatter(),
+  '3R': ()=>illCornerFlowers()+illStarScatter(),
+  '4L': ()=>illCornerFlowers()+illStarScatter(),
+  '4R': ()=>illTwoFigures()+illStarScatter(),
+  '5L': ()=>illMoon()+illStarScatter(),
+  '5R': ()=>illCornerFlowers()+illStarScatter(),
+  '6L': ()=>illCornerFlowers()+illCandle(),
+  '6R': ()=>illTwoFigures()+illStarScatter(),
+  '7L': ()=>illCornerFlowers()+illStarScatter(),
+  '7R': illHearts,
+};
 
-			/* Page text layer */
-			.pcontent {
-				position: absolute;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				justify-content: center;
-				text-align: center;
-				padding: 54px 48px;
-				z-index: 3;
-			}
+// ── Spreads ────────────────────────────────────────────────
+const S = [
+  {
+    L:{h:''},
+    R:{type:'cover', h:`<div class="cover-title"><em>Avni</em> &amp; <em>Rana</em></div><div class="divider"></div><div class="cover-sub">A Love Story</div>`},
+    n:['','']
+  },
+  {
+    L:{h:`<div class="story">Once upon a time,<br>in a soft quiet world,<br>there were <em>Avni</em> and <em>Rana</em>…</div>`},
+    R:{h:`<div class="story">Every night, they found<br>a cozy little place…<span class="gap"></span>just to be close.</div>`},
+    n:['i','ii']
+  },
+  {
+    L:{h:`<div class="story">One night,<br>the lights went out…<span class="gap"></span><em>"Guess it's just us now,"</em><br><em>Rana said softly.</em></div>`},
+    R:{h:`<div class="story">Avni reached for her phone,<br>but he gently stopped her.<span class="gap"></span><em>"Stay… like this."</em></div>`},
+    n:['iii','iv']
+  },
+  {
+    L:{h:`<div class="story">Moonlight filled the room.<span class="gap"></span><em>"What?"</em> she asked.</div>`},
+    R:{h:`<div class="story"><em>"Nothing…</em><span class="gap"></span><em>I just love</em><br><em>being with you."</em></div>`},
+    n:['v','vi']
+  },
+  {
+    L:{h:`<div class="story">They talked… laughed…<span class="gap"></span>and slowly, the world<br>faded away.</div>`},
+    R:{h:`<div class="story">Rana rested his head<br>on her shoulder.</div>`},
+    n:['vii','viii']
+  },
+  {
+    L:{h:`<div class="story"><em>"If the lights<br>never come back…"</em><span class="gap"></span><em>"I'd still be okay."</em></div>`},
+    R:{h:`<div class="story"><em>"Me too,"</em><span class="gap"></span>Avni whispered.</div>`},
+    n:['ix','x']
+  },
+  {
+    L:{h:`<div class="story">The lights returned…</div>`},
+    R:{h:`<div class="story">But they didn't move.<span class="gap"></span>Because some moments<br>feel like forever.</div>`},
+    n:['xi','xii']
+  },
+  {
+    L:{h:`<div class="story"><em>"Same time tomorrow?"</em></div>`},
+    R:{type:'finale', h:`<div class="finale">Always.</div>`},
+    n:['xiii','']
+  }
+];
 
-			/* Typography */
-			.cover-title {
-				font-family: "Playfair Display", serif;
-				font-size: 40px;
-				font-weight: 700;
-				color: #42160a;
-				letter-spacing: 3px;
-				line-height: 1.2;
-			}
-			.cover-title em {
-				font-style: italic;
-				color: #6e2010;
-			}
-			.divider {
-				width: 56px;
-				height: 1px;
-				background: rgba(110, 60, 20, 0.45);
-				margin: 18px auto;
-			}
-			.cover-sub {
-				font-size: 12px;
-				letter-spacing: 6px;
-				text-transform: uppercase;
-				color: #7a4828;
-				font-weight: 300;
-			}
+// ── DOM refs ───────────────────────────────────────────────
+const prw=document.getElementById('prw');
+const cvL=document.getElementById('cvL'), cvF=document.getElementById('cvF'), cvB=document.getElementById('cvB');
+const ilL=document.getElementById('ilL'), ilF=document.getElementById('ilF'), ilB=document.getElementById('ilB');
+const ctL=document.getElementById('ctL'), ctF=document.getElementById('ctF'), ctB=document.getElementById('ctB');
+const nmL=document.getElementById('nmL'), nmF=document.getElementById('nmF');
+const bPrev=document.getElementById('bPrev'), bNext=document.getElementById('bNext');
+const nind=document.getElementById('nind');
+let cur=0, busy=false;
 
-			.story {
-				font-size: 21px;
-				line-height: 2;
-				color: #2a1006;
-				font-weight: 400;
-			}
-			.story em {
-				font-style: italic;
-				color: #6a1e08;
-				font-size: 22px;
-			}
-			.gap {
-				display: block;
-				height: 18px;
-			}
-			.finale {
-				font-family: "Playfair Display", serif;
-				font-size: 34px;
-				font-weight: 400;
-				font-style: italic;
-				color: #42160a;
-				letter-spacing: 2px;
-			}
+function getIll(si, side){ const fn=illMap[`${si}${side}`]; return fn?fn():''; }
 
-			.pnum {
-				position: absolute;
-				bottom: 20px;
-				width: 100%;
-				text-align: center;
-				font-size: 11px;
-				color: #9a7050;
-				letter-spacing: 4px;
-				z-index: 4;
-			}
+function renderPage(cv, il, ct, nm, side, si, sideKey){
+  drawTex(cv, side.type||'story');
+  il.innerHTML = getIll(si, sideKey);
+  ct.innerHTML = side.h;
+  if(nm) nm.textContent='';
+}
 
-			/* Nav */
-			.nav {
-				margin-top: 30px;
-				display: flex;
-				align-items: center;
-				gap: 28px;
-			}
-			.nbtn {
-				background: transparent;
-				border: 1px solid rgba(195, 130, 70, 0.35);
-				color: #c8905a;
-				padding: 9px 26px;
-				cursor: pointer;
-				font-family: "Cormorant Garamond", serif;
-				font-size: 15px;
-				letter-spacing: 3px;
-				text-transform: uppercase;
-				transition: all 0.3s;
-				border-radius: 2px;
-				outline: none;
-			}
-			.nbtn:hover:not(:disabled) {
-				background: rgba(200, 140, 80, 0.1);
-				border-color: rgba(195, 130, 70, 0.7);
-			}
-			.nbtn:disabled {
-				opacity: 0.18;
-				cursor: default;
-			}
-			.nind {
-				font-size: 13px;
-				color: rgba(195, 140, 90, 0.45);
-				letter-spacing: 2px;
-				min-width: 56px;
-				text-align: center;
-			}
-		</style>
-	</head>
-	<body>
-		<canvas id="starfield"></canvas>
+function preloadBack(si){
+  if(si<S.length){
+    const nx=S[si];
+    drawTex(cvB, nx.L.type||'story');
+    ilB.innerHTML=getIll(si,'L');
+    ctB.innerHTML=nx.L.h;
+  }
+}
 
-		<div class="scene">
-			<div class="book">
-				<div class="spine"></div>
+function render(){
+  const s=S[cur];
+  renderPage(cvL,ilL,ctL,nmL,s.L,cur,'L');
+  renderPage(cvF,ilF,ctF,nmF,s.R,cur,'R');
+  preloadBack(cur+1);
+  nind.textContent=`${cur+1} / ${S.length}`;
+  bPrev.disabled=cur===0; bNext.disabled=cur===S.length-1;
+}
 
-				<!-- Left page -->
-				<div class="page-left">
-					<canvas class="tex" id="cvL" width="364" height="500"></canvas>
-					<div class="pcontent" id="ctL"></div>
-					<div class="pnum" id="nmL"></div>
-				</div>
+function go(dir){
+  if(busy) return;
+  if(dir===1&&cur>=S.length-1) return;
+  if(dir===-1&&cur<=0) return;
+  busy=true; bPrev.disabled=true; bNext.disabled=true;
 
-				<!-- Right page (flip wrapper) -->
-				<div class="prw" id="prw">
-					<div class="pface front">
-						<canvas class="tex" id="cvF" width="364" height="500"></canvas>
-						<div class="pcontent" id="ctF"></div>
-						<div class="pnum" id="nmF"></div>
-					</div>
-					<div class="pface back">
-						<canvas class="tex" id="cvB" width="364" height="500"></canvas>
-						<div class="pcontent" id="ctB"></div>
-					</div>
-				</div>
-			</div>
+  if(dir===1){
+    preloadBack(cur+1);
+    prw.classList.add('go','flipped');
+    setTimeout(()=>{
+      cur++;
+      const s=S[cur];
+      renderPage(cvL,ilL,ctL,nmL,s.L,cur,'L');
+      renderPage(cvF,ilF,ctF,nmF,s.R,cur,'R');
+      preloadBack(cur+1);
+      prw.classList.remove('go','flipped');
+      nind.textContent=`${cur+1} / ${S.length}`;
+      bPrev.disabled=cur===0; bNext.disabled=cur===S.length-1;
+      busy=false;
+    },1520);
+  } else {
+    const prev=S[cur-1];
+    renderPage(cvF,ilF,ctF,nmF,prev.R,cur-1,'R');
+    drawTex(cvB,S[cur].L.type||'story');
+    ilB.innerHTML=getIll(cur,'L');
+    ctB.innerHTML=S[cur].L.h;
+    prw.classList.remove('go'); prw.classList.add('flipped');
+    void prw.offsetHeight;
+    renderPage(cvL,ilL,ctL,nmL,prev.L,cur-1,'L');
+    prw.classList.add('go'); prw.classList.remove('flipped');
+    setTimeout(()=>{
+      cur--;
+      preloadBack(cur+1);
+      prw.classList.remove('go');
+      nind.textContent=`${cur+1} / ${S.length}`;
+      bPrev.disabled=cur===0; bNext.disabled=cur===S.length-1;
+      busy=false;
+    },1520);
+  }
+}
 
-			<div class="nav">
-				<button class="nbtn" id="bPrev" onclick="go(-1)">← Back</button>
-				<span class="nind" id="nind">1 / 8</span>
-				<button class="nbtn" id="bNext" onclick="go(1)">Next →</button>
-			</div>
-		</div>
-
-		<script>
-			// ─── Starfield ───────────────────────────────────────────────
-			(function () {
-				const c = document.getElementById("starfield");
-				const ctx = c.getContext("2d");
-				let stars = [];
-				function resize() {
-					c.width = window.innerWidth;
-					c.height = window.innerHeight;
-					stars = Array.from({ length: 120 }, () => ({
-						x: Math.random() * c.width,
-						y: Math.random() * c.height,
-						r: Math.random() * 1.1 + 0.2,
-						a: Math.random(),
-						da: (Math.random() - 0.5) * 0.008,
-					}));
-				}
-				function draw() {
-					ctx.clearRect(0, 0, c.width, c.height);
-					stars.forEach((s) => {
-						s.a = Math.max(0.05, Math.min(1, s.a + s.da));
-						if (s.a <= 0.05 || s.a >= 1) s.da *= -1;
-						ctx.globalAlpha = s.a * 0.55;
-						ctx.fillStyle = "#ffe8c0";
-						ctx.beginPath();
-						ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-						ctx.fill();
-					});
-					ctx.globalAlpha = 1;
-					requestAnimationFrame(draw);
-				}
-				resize();
-				draw();
-				window.addEventListener("resize", resize);
-			})();
-
-			// ─── Canvas Drawing ──────────────────────────────────────────
-			function drawPage(cv, opts) {
-				const ctx = cv.getContext("2d"),
-					W = cv.width,
-					H = cv.height;
-				const col = opts.finale
-					? "#fff2ec"
-					: opts.cover
-						? "#f7e8cc"
-						: "#fdf6e8";
-				ctx.fillStyle = col;
-				ctx.fillRect(0, 0, W, H);
-				grain(ctx, W, H);
-				vignette(ctx, W, H, opts.cover ? 0.2 : 0.1);
-				border(ctx, W, H);
-				if (opts.cover) coverDecor(ctx, W, H);
-				else if (opts.finale) finaleDecor(ctx, W, H);
-				else subtleDecor(ctx, W, H);
-			}
-
-			function grain(ctx, W, H) {
-				const id = ctx.getImageData(0, 0, W, H),
-					d = id.data;
-				for (let i = 0; i < d.length; i += 4) {
-					const n = (Math.random() - 0.5) * 20;
-					d[i] = clamp(d[i] + n);
-					d[i + 1] = clamp(d[i + 1] + n * 0.88);
-					d[i + 2] = clamp(d[i + 2] + n * 0.55);
-				}
-				ctx.putImageData(id, 0, 0);
-			}
-			function clamp(v) {
-				return Math.max(0, Math.min(255, v | 0));
-			}
-
-			function vignette(ctx, W, H, str) {
-				const g = ctx.createRadialGradient(
-					W / 2,
-					H / 2,
-					H * 0.2,
-					W / 2,
-					H / 2,
-					H * 0.9,
-				);
-				g.addColorStop(0, "rgba(0,0,0,0)");
-				g.addColorStop(1, `rgba(50,18,4,${str})`);
-				ctx.fillStyle = g;
-				ctx.fillRect(0, 0, W, H);
-			}
-
-			function border(ctx, W, H) {
-				const m = 20;
-				ctx.strokeStyle = "rgba(110,62,24,0.3)";
-				ctx.lineWidth = 0.9;
-				ctx.strokeRect(m, m, W - 2 * m, H - 2 * m);
-				const m2 = m + 5;
-				ctx.strokeStyle = "rgba(110,62,24,0.14)";
-				ctx.lineWidth = 0.5;
-				ctx.strokeRect(m2, m2, W - 2 * m2, H - 2 * m2);
-				[
-					[m, m, 0],
-					[W - m, m, Math.PI / 2],
-					[W - m, H - m, Math.PI],
-					[m, H - m, -Math.PI / 2],
-				].forEach(([x, y, a]) => corner(ctx, x, y, a));
-			}
-
-			function corner(ctx, x, y, a) {
-				ctx.save();
-				ctx.translate(x, y);
-				ctx.rotate(a);
-				ctx.strokeStyle = "rgba(110,62,24,0.5)";
-				ctx.lineWidth = 0.9;
-				ctx.beginPath();
-				ctx.moveTo(12, 0);
-				ctx.lineTo(0, 0);
-				ctx.lineTo(0, 12);
-				ctx.stroke();
-				ctx.fillStyle = "rgba(110,62,24,0.45)";
-				ctx.save();
-				ctx.translate(0, 0);
-				ctx.rotate(Math.PI / 4);
-				ctx.fillRect(-2.2, -2.2, 4.4, 4.4);
-				ctx.restore();
-				ctx.restore();
-			}
-
-			function flower(ctx, x, y, r, col, alpha) {
-				ctx.save();
-				ctx.globalAlpha = alpha;
-				ctx.fillStyle = col;
-				for (let i = 0; i < 6; i++) {
-					ctx.save();
-					ctx.translate(x, y);
-					ctx.rotate((i * Math.PI) / 3);
-					ctx.beginPath();
-					ctx.ellipse(r * 0.6, 0, r * 0.42, r * 0.22, 0, 0, Math.PI * 2);
-					ctx.fill();
-					ctx.restore();
-				}
-				ctx.beginPath();
-				ctx.arc(x, y, r * 0.25, 0, Math.PI * 2);
-				ctx.fill();
-				ctx.restore();
-			}
-
-			function heart(ctx, x, y, s, col, alpha) {
-				ctx.save();
-				ctx.globalAlpha = alpha;
-				ctx.fillStyle = col;
-				ctx.beginPath();
-				ctx.moveTo(x, y + s * 0.35);
-				ctx.bezierCurveTo(x, y + s * 0.08, x - s, y - s * 0.28, x - s, y);
-				ctx.bezierCurveTo(x - s, y + s * 0.52, x, y + s * 0.82, x, y + s);
-				ctx.bezierCurveTo(x, y + s * 0.82, x + s, y + s * 0.52, x + s, y);
-				ctx.bezierCurveTo(
-					x + s,
-					y - s * 0.28,
-					x,
-					y + s * 0.08,
-					x,
-					y + s * 0.35,
-				);
-				ctx.fill();
-				ctx.restore();
-			}
-
-			function coverDecor(ctx, W, H) {
-				flower(ctx, W * 0.5, H * 0.18, 24, "#8b3810", 0.13);
-				flower(ctx, W * 0.18, H * 0.18, 14, "#8b3810", 0.1);
-				flower(ctx, W * 0.82, H * 0.18, 14, "#8b3810", 0.1);
-				flower(ctx, W * 0.18, H * 0.82, 14, "#8b3810", 0.1);
-				flower(ctx, W * 0.82, H * 0.82, 14, "#8b3810", 0.1);
-				ctx.save();
-				ctx.globalAlpha = 0.18;
-				ctx.strokeStyle = "#7a3010";
-				ctx.lineWidth = 0.6;
-				[H * 0.36, H * 0.64].forEach((y) => {
-					ctx.beginPath();
-					ctx.moveTo(W * 0.18, y);
-					ctx.lineTo(W * 0.82, y);
-					ctx.stroke();
-					ctx.save();
-					ctx.translate(W / 2, y);
-					ctx.rotate(Math.PI / 4);
-					ctx.fillStyle = "#7a3010";
-					ctx.fillRect(-2.5, -2.5, 5, 5);
-					ctx.restore();
-				});
-				ctx.restore();
-			}
-
-			function finaleDecor(ctx, W, H) {
-				[
-					[W * 0.28, H * 0.2],
-					[W * 0.72, H * 0.2],
-					[W * 0.15, H * 0.5],
-					[W * 0.85, H * 0.5],
-					[W * 0.28, H * 0.8],
-					[W * 0.72, H * 0.8],
-					[W * 0.5, H * 0.12],
-					[W * 0.5, H * 0.88],
-				].forEach(([x, y]) => heart(ctx, x, y, 10, "#c0406a", 0.11));
-				ctx.save();
-				ctx.globalAlpha = 0.07;
-				const g = ctx.createRadialGradient(
-					W / 2,
-					H / 2,
-					0,
-					W / 2,
-					H / 2,
-					W * 0.6,
-				);
-				g.addColorStop(0, "#ffb0c8");
-				g.addColorStop(1, "transparent");
-				ctx.fillStyle = g;
-				ctx.fillRect(0, 0, W, H);
-				ctx.restore();
-			}
-
-			function subtleDecor(ctx, W, H) {
-				const m = 44;
-				[
-					[m, m],
-					[W - m, m],
-					[m, H - m],
-					[W - m, H - m],
-				].forEach(([x, y]) => flower(ctx, x, y, 9, "#8b4020", 0.08));
-			}
-
-			// ─── Spreads Data ─────────────────────────────────────────────
-			const S = [
-				{
-					L: { o: { cover: false, _deco: true }, h: "" },
-					R: {
-						o: { cover: true },
-						h: `<div class="cover-title"><em>Avni</em> &amp; <em>Rana</em></div><div class="divider"></div><div class="cover-sub">A Love Story</div>`,
-					},
-					n: ["", ""],
-				},
-				{
-					L: {
-						o: {},
-						h: `<div class="story">Once upon a time,<br>in a soft quiet world,<br>there were <em>Avni</em> and <em>Rana</em>…</div>`,
-					},
-					R: {
-						o: {},
-						h: `<div class="story">Every night, they found<br>a cozy little place…<span class="gap"></span>just to be close.</div>`,
-					},
-					n: ["i", "ii"],
-				},
-				{
-					L: {
-						o: {},
-						h: `<div class="story">One night,<br>the lights went out…<span class="gap"></span><em>"Guess it's just us now,"</em><br><em>Rana said softly.</em></div>`,
-					},
-					R: {
-						o: {},
-						h: `<div class="story">Avni reached for her phone,<br>but he gently stopped her.<span class="gap"></span><em>"Stay… like this."</em></div>`,
-					},
-					n: ["iii", "iv"],
-				},
-				{
-					L: {
-						o: {},
-						h: `<div class="story">Moonlight filled the room.<span class="gap"></span><em>"What?"</em> she asked.</div>`,
-					},
-					R: {
-						o: {},
-						h: `<div class="story"><em>"Nothing…</em><span class="gap"></span><em>I just love</em><br><em>being with you."</em></div>`,
-					},
-					n: ["v", "vi"],
-				},
-				{
-					L: {
-						o: {},
-						h: `<div class="story">They talked… laughed…<span class="gap"></span>and slowly, the world<br>faded away.</div>`,
-					},
-					R: {
-						o: {},
-						h: `<div class="story">Rana rested his head<br>on her shoulder.</div>`,
-					},
-					n: ["vii", "viii"],
-				},
-				{
-					L: {
-						o: {},
-						h: `<div class="story"><em>"If the lights<br>never come back…"</em><span class="gap"></span><em>"I'd still be okay."</em></div>`,
-					},
-					R: {
-						o: {},
-						h: `<div class="story"><em>"Me too,"</em><span class="gap"></span>Avni whispered.</div>`,
-					},
-					n: ["ix", "x"],
-				},
-				{
-					L: { o: {}, h: `<div class="story">The lights returned…</div>` },
-					R: {
-						o: {},
-						h: `<div class="story">But they didn't move.<span class="gap"></span>Because some moments<br>feel like forever.</div>`,
-					},
-					n: ["xi", "xii"],
-				},
-				{
-					L: {
-						o: {},
-						h: `<div class="story"><em>"Same time tomorrow?"</em></div>`,
-					},
-					R: { o: { finale: true }, h: `<div class="finale">Always.</div>` },
-					n: ["xiii", ""],
-				},
-			];
-
-			// ─── DOM Refs ─────────────────────────────────────────────────
-			const prw = document.getElementById("prw");
-			const [cvL, cvF, cvB] = ["cvL", "cvF", "cvB"].map((id) =>
-				document.getElementById(id),
-			);
-			const [ctL, ctF, ctB] = ["ctL", "ctF", "ctB"].map((id) =>
-				document.getElementById(id),
-			);
-			const nmL = document.getElementById("nmL");
-			const nmF = document.getElementById("nmF");
-			const bPrev = document.getElementById("bPrev");
-			const bNext = document.getElementById("bNext");
-			const nind = document.getElementById("nind");
-
-			let cur = 0,
-				busy = false;
-
-			function rp(cv, ct, side, num, nmEl) {
-				drawPage(cv, side.o);
-				ct.innerHTML = side.h;
-				if (nmEl) nmEl.textContent = num;
-			}
-
-			function render() {
-				const s = S[cur];
-				rp(cvL, ctL, s.L, s.n[0], nmL);
-				rp(cvF, ctF, s.R, s.n[1], nmF);
-				preloadBack();
-				nind.textContent = `${cur + 1} / ${S.length}`;
-				bPrev.disabled = cur === 0;
-				bNext.disabled = cur === S.length - 1;
-			}
-
-			function preloadBack() {
-				if (cur < S.length - 1) {
-					const nx = S[cur + 1];
-					rp(cvB, ctB, nx.L, nx.n[0], null);
-				}
-			}
-
-			function go(dir) {
-				if (busy) return;
-				if (dir === 1 && cur >= S.length - 1) return;
-				if (dir === -1 && cur <= 0) return;
-				busy = true;
-				bPrev.disabled = true;
-				bNext.disabled = true;
-
-				if (dir === 1) {
-					// Forward: front→back, flip out, swap
-					preloadBack();
-					prw.classList.add("go", "flipped");
-					setTimeout(() => {
-						cur++;
-						const s = S[cur];
-						rp(cvL, ctL, s.L, s.n[0], nmL);
-						rp(cvF, ctF, s.R, s.n[1], nmF);
-						preloadBack();
-						prw.classList.remove("go", "flipped");
-						nind.textContent = `${cur + 1} / ${S.length}`;
-						bPrev.disabled = cur === 0;
-						bNext.disabled = cur === S.length - 1;
-						busy = false;
-					}, 1520);
-				} else {
-					// Backward: load prev right on front, current left on back, instant flip, unflip animated
-					const prev = S[cur - 1];
-					rp(cvF, ctF, prev.R, prev.n[1], nmF);
-					rp(cvB, ctB, S[cur].L, S[cur].n[0], null);
-					prw.classList.remove("go");
-					prw.classList.add("flipped");
-					void prw.offsetHeight; // reflow
-					rp(cvL, ctL, prev.L, prev.n[0], nmL);
-					prw.classList.add("go");
-					prw.classList.remove("flipped");
-					setTimeout(() => {
-						cur--;
-						preloadBack();
-						prw.classList.remove("go");
-						nind.textContent = `${cur + 1} / ${S.length}`;
-						bPrev.disabled = cur === 0;
-						bNext.disabled = cur === S.length - 1;
-						busy = false;
-					}, 1520);
-				}
-			}
-
-			render();
-		</script>
-	</body>
+bPrev.onclick=()=>go(-1);
+bNext.onclick=()=>go(1);
+render();
+})();
+</script>
+</body>
 </html>
