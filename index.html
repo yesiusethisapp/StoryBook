@@ -1,391 +1,616 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Avni & Rana — A Love Story</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      width: 100%; min-height: 100vh; background: #0c0602;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Cormorant Garamond', serif; overflow: hidden;
-    }
-    #ar-stars { position: fixed; inset: 0; pointer-events: none; }
-    .scene {
-      position: relative; z-index: 1; display: flex;
-      flex-direction: column; align-items: center; padding: 28px 16px 20px;
-    }
-    .book {
-      position: relative; width: min(740px, 96vw); height: clamp(320px, 50vw, 500px);
-      perspective: 3200px; filter: drop-shadow(0 28px 60px rgba(0,0,0,.9));
-    }
-    .spine {
-      position: absolute; left: 50%; top: 0; width: 12px; height: 100%;
-      transform: translateX(-50%);
-      background: linear-gradient(to right, #2a0e04, #7a3010, #9a4818, #7a3010, #2a0e04);
-      z-index: 50; box-shadow: 0 0 16px rgba(0,0,0,.7);
-    }
-    .page-left {
-      position: absolute; left: 0; top: 0; width: 50%; height: 100%;
-      border-radius: 3px 0 0 3px; overflow: hidden;
-    }
-    .page-left::after {
-      content: ''; position: absolute; top: 0; right: 0; width: 28px; height: 100%;
-      background: linear-gradient(to right, transparent, rgba(0,0,0,.18));
-      pointer-events: none; z-index: 5;
-    }
-    .prw {
-      position: absolute; right: 0; top: 0; width: 50%; height: 100%;
-      transform-origin: left center; transform-style: preserve-3d; z-index: 10;
-    }
-    .prw.go { transition: transform 1.5s cubic-bezier(.645,.045,.355,1); }
-    .prw.flipped { transform: rotateY(-180deg); }
-    .pface { position: absolute; inset: 0; backface-visibility: hidden; overflow: hidden; }
-    .pface.front { border-radius: 0 3px 3px 0; box-shadow: 4px 0 18px rgba(0,0,0,.35); }
-    .pface.back { transform: rotateY(180deg); border-radius: 3px 0 0 3px; }
-    .pface canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-    .pface svg.ill { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
-    .pcontent {
-      position: absolute; inset: 0; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; text-align: center;
-      padding: clamp(28px,6%,54px) clamp(20px,6%,48px); z-index: 3;
-    }
-    .pnum { position: absolute; bottom: 12px; width: 100%; text-align: center; font-size: 11px; color: #9a7050; letter-spacing: 4px; z-index: 4; }
-    .cover-title { font-family: 'Playfair Display', serif; font-size: clamp(24px,4vw,40px); font-weight: 700; color: #42160a; letter-spacing: 3px; line-height: 1.2; }
-    .cover-title em { font-style: italic; color: #6e2010; }
-    .divider { width: 56px; height: 1px; background: rgba(110,60,20,.45); margin: 14px auto; }
-    .cover-sub { font-size: 11px; letter-spacing: 6px; text-transform: uppercase; color: #7a4828; font-weight: 300; }
-    .story { font-size: clamp(14px,2.2vw,21px); line-height: 2; color: #2a1006; font-weight: 400; }
-    .story em { font-style: italic; color: #6a1e08; font-size: clamp(15px,2.4vw,22px); }
-    .gap { display: block; height: 14px; }
-    .finale { font-family: 'Playfair Display', serif; font-size: clamp(22px,4vw,34px); font-weight: 400; font-style: italic; color: #42160a; letter-spacing: 2px; }
-    .nav { margin-top: 22px; display: flex; align-items: center; gap: 22px; }
-    .nbtn {
-      background: transparent; border: 1px solid rgba(195,130,70,.35); color: #c8905a;
-      padding: 8px 22px; cursor: pointer; font-family: 'Cormorant Garamond', serif;
-      font-size: 14px; letter-spacing: 3px; text-transform: uppercase;
-      transition: all .3s; border-radius: 2px; outline: none;
-    }
-    .nbtn:hover:not(:disabled) { background: rgba(200,140,80,.1); border-color: rgba(195,130,70,.7); }
-    .nbtn:disabled { opacity: .18; cursor: default; }
-    .nind { font-size: 13px; color: rgba(195,140,90,.45); letter-spacing: 2px; min-width: 52px; text-align: center; }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Avni & Rana — A Love Story</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;min-height:100vh;background:#0c0602;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;overflow:hidden}
+#starfield{position:fixed;inset:0;pointer-events:none;z-index:0}
+.scene{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;padding:24px 12px 16px}
+.book{position:relative;width:min(740px,96vw);height:clamp(300px,48vw,500px);perspective:3200px;filter:drop-shadow(0 30px 65px rgba(0,0,0,.95))}
+.spine{position:absolute;left:50%;top:0;width:12px;height:100%;transform:translateX(-50%);background:linear-gradient(to right,#2a0e04,#7a3010,#9a4818,#7a3010,#2a0e04);z-index:50;box-shadow:0 0 16px rgba(0,0,0,.7)}
+.page-left{position:absolute;left:0;top:0;width:calc(50% - 6px);height:100%;border-radius:3px 0 0 3px;overflow:hidden}
+.page-left::after{content:'';position:absolute;top:0;right:0;width:28px;height:100%;background:linear-gradient(to right,transparent,rgba(0,0,0,.18));pointer-events:none;z-index:5}
+.prw{position:absolute;right:0;top:0;width:calc(50% - 6px);height:100%;transform-origin:left center;transform-style:preserve-3d;z-index:10}
+.prw.go{transition:transform 1.5s cubic-bezier(.645,.045,.355,1)}
+.prw.flipped{transform:rotateY(-180deg)}
+.pface{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden}
+.pface.front{border-radius:0 3px 3px 0;box-shadow:4px 0 18px rgba(0,0,0,.35)}
+.pface.back{transform:rotateY(180deg);border-radius:3px 0 0 3px}
+.pface canvas.bg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.pface canvas.art{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:2}
+.pcontent{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:clamp(24px,6%,54px) clamp(18px,6%,48px);z-index:3}
+.pnum{position:absolute;bottom:14px;width:100%;text-align:center;font-size:11px;color:#9a7050;letter-spacing:4px;z-index:4}
+.cover-title{font-family:'Playfair Display',serif;font-size:clamp(22px,4.5vw,40px);font-weight:700;color:#42160a;letter-spacing:3px;line-height:1.2}
+.cover-title em{font-style:italic;color:#6e2010}
+.divider{width:56px;height:1px;background:rgba(110,60,20,.45);margin:14px auto}
+.cover-sub{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:#7a4828;font-weight:300}
+.story{font-size:clamp(13px,2.1vw,21px);line-height:2.1;color:#2a1006;font-weight:400}
+.story em{font-style:italic;color:#6a1e08;font-size:clamp(14px,2.3vw,22px)}
+.gap{display:block;height:14px}
+.finale{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weight:400;font-style:italic;color:#42160a;letter-spacing:2px}
+.nav{margin-top:22px;display:flex;align-items:center;gap:22px}
+.nbtn{background:transparent;border:1px solid rgba(195,130,70,.35);color:#c8905a;padding:8px 22px;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:14px;letter-spacing:3px;text-transform:uppercase;transition:all .3s;border-radius:2px;outline:none}
+.nbtn:hover:not(:disabled){background:rgba(200,140,80,.1);border-color:rgba(195,130,70,.7)}
+.nbtn:disabled{opacity:.18;cursor:default}
+.nind{font-size:13px;color:rgba(195,140,90,.45);letter-spacing:2px;min-width:52px;text-align:center}
+</style>
 </head>
 <body>
-  <canvas id="ar-stars"></canvas>
-  <div class="scene">
-    <div class="book">
-      <div class="spine"></div>
-      <div class="page-left">
-        <canvas id="cvL" width="370" height="500"></canvas>
-        <svg class="ill" id="ilL" viewBox="0 0 370 500" xmlns="http://www.w3.org/2000/svg"></svg>
-        <div class="pcontent" id="ctL"></div>
-        <div class="pnum" id="nmL"></div>
-      </div>
-      <div class="prw" id="prw">
-        <div class="pface front">
-          <canvas id="cvF" width="370" height="500"></canvas>
-          <svg class="ill" id="ilF" viewBox="0 0 370 500" xmlns="http://www.w3.org/2000/svg"></svg>
-          <div class="pcontent" id="ctF"></div>
-          <div class="pnum" id="nmF"></div>
-        </div>
-        <div class="pface back">
-          <canvas id="cvB" width="370" height="500"></canvas>
-          <svg class="ill" id="ilB" viewBox="0 0 370 500" xmlns="http://www.w3.org/2000/svg"></svg>
-          <div class="pcontent" id="ctB"></div>
-        </div>
-      </div>
+<canvas id="starfield"></canvas>
+<div class="scene">
+  <div class="book">
+    <div class="spine"></div>
+    <div class="page-left">
+      <canvas class="bg" id="bgL" width="370" height="500"></canvas>
+      <canvas class="art" id="artL" width="370" height="500"></canvas>
+      <div class="pcontent" id="ctL"></div>
+      <div class="pnum" id="nmL"></div>
     </div>
-    <div class="nav">
-      <button class="nbtn" id="bPrev">← Back</button>
-      <span class="nind" id="nind">1 / 8</span>
-      <button class="nbtn" id="bNext">Next →</button>
+    <div class="prw" id="prw">
+      <div class="pface front">
+        <canvas class="bg" id="bgF" width="370" height="500"></canvas>
+        <canvas class="art" id="artF" width="370" height="500"></canvas>
+        <div class="pcontent" id="ctF"></div>
+        <div class="pnum" id="nmF"></div>
+      </div>
+      <div class="pface back">
+        <canvas class="bg" id="bgB" width="370" height="500"></canvas>
+        <canvas class="art" id="artB" width="370" height="500"></canvas>
+        <div class="pcontent" id="ctB"></div>
+      </div>
     </div>
   </div>
+  <div class="nav">
+    <button class="nbtn" id="bPrev">← Back</button>
+    <span class="nind" id="nind">1 / 8</span>
+    <button class="nbtn" id="bNext">Next →</button>
+  </div>
+</div>
 
 <script>
+// ─── Starfield ──────────────────────────────────────────────────────────────
 (function(){
-
-// ── Starfield ──────────────────────────────────────────────
-const sc = document.getElementById('ar-stars');
-const sx = sc.getContext('2d');
-let stars = [];
-function resizeStar(){
-  sc.width = window.innerWidth; sc.height = window.innerHeight;
-  stars = Array.from({length:110}, () => ({
-    x: Math.random()*sc.width, y: Math.random()*sc.height,
-    r: Math.random()*1.1+.2, a: Math.random(), da: (Math.random()-.5)*.007
-  }));
-}
-function drawStars(){
-  sx.clearRect(0,0,sc.width,sc.height);
-  stars.forEach(s => {
-    s.a = Math.max(.05, Math.min(1, s.a+s.da));
-    if(s.a<=.05||s.a>=1) s.da*=-1;
-    sx.globalAlpha = s.a*.5; sx.fillStyle='#ffe8c0';
-    sx.beginPath(); sx.arc(s.x,s.y,s.r,0,Math.PI*2); sx.fill();
-  });
-  sx.globalAlpha=1; requestAnimationFrame(drawStars);
-}
-resizeStar(); drawStars();
-window.addEventListener('resize', resizeStar);
-
-// ── Canvas page texture ────────────────────────────────────
-function drawTex(cv, type){
-  const ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
-  ctx.fillStyle = type==='cover' ? '#f7e8cc' : type==='finale' ? '#fff2ec' : '#fdf6e8';
-  ctx.fillRect(0,0,W,H);
-  const id=ctx.getImageData(0,0,W,H), d=id.data;
-  for(let i=0;i<d.length;i+=4){
-    const n=(Math.random()-.5)*18;
-    d[i]=clamp(d[i]+n); d[i+1]=clamp(d[i+1]+n*.88); d[i+2]=clamp(d[i+2]+n*.55);
+  const c=document.getElementById('starfield'),x=c.getContext('2d');
+  let stars=[];
+  function resize(){
+    c.width=window.innerWidth;c.height=window.innerHeight;
+    stars=Array.from({length:120},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.1+.2,a:Math.random(),da:(Math.random()-.5)*.007}));
   }
-  ctx.putImageData(id,0,0);
-  const g=ctx.createRadialGradient(W/2,H/2,H*.2,W/2,H/2,H*.9);
-  g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(1,`rgba(50,18,4,${type==='cover'?.22:.1})`);
-  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-  const m=20;
-  ctx.strokeStyle='rgba(110,62,24,.28)'; ctx.lineWidth=.9; ctx.strokeRect(m,m,W-2*m,H-2*m);
-  ctx.strokeStyle='rgba(110,62,24,.13)'; ctx.lineWidth=.5; ctx.strokeRect(m+5,m+5,W-2*(m+5),H-2*(m+5));
-  [[m,m,0],[W-m,m,Math.PI/2],[W-m,H-m,Math.PI],[m,H-m,-Math.PI/2]].forEach(([x,y,a])=>corner(ctx,x,y,a));
-}
-function clamp(v){ return Math.max(0,Math.min(255,v|0)); }
-function corner(ctx,x,y,a){
-  ctx.save(); ctx.translate(x,y); ctx.rotate(a);
-  ctx.strokeStyle='rgba(110,62,24,.5)'; ctx.lineWidth=.9;
-  ctx.beginPath(); ctx.moveTo(12,0); ctx.lineTo(0,0); ctx.lineTo(0,12); ctx.stroke();
-  ctx.fillStyle='rgba(110,62,24,.45)';
-  ctx.save(); ctx.rotate(Math.PI/4); ctx.fillRect(-2.2,-2.2,4.4,4.4); ctx.restore();
-  ctx.restore();
-}
-
-// ── SVG Illustrations ──────────────────────────────────────
-function flowerSVG(x,y,r,col,op){
-  let p=`<g opacity="${op}" fill="${col}">`;
-  for(let i=0;i<6;i++){
-    const a=i*60*Math.PI/180, ex=x+r*.6*Math.cos(a), ey=y+r*.6*Math.sin(a);
-    p+=`<ellipse cx="${ex}" cy="${ey}" rx="${r*.42}" ry="${r*.22}" transform="rotate(${i*60} ${x} ${y})"/>`;
+  function draw(){
+    x.clearRect(0,0,c.width,c.height);
+    stars.forEach(s=>{s.a=Math.max(.05,Math.min(1,s.a+s.da));if(s.a<=.05||s.a>=1)s.da*=-1;x.globalAlpha=s.a*.5;x.fillStyle='#ffe8c0';x.beginPath();x.arc(s.x,s.y,s.r,0,Math.PI*2);x.fill()});
+    x.globalAlpha=1;requestAnimationFrame(draw);
   }
-  p+=`<circle cx="${x}" cy="${y}" r="${r*.25}"/></g>`;
-  return p;
-}
-function heartSVG(x,y,s,col,op){
-  return `<path opacity="${op}" fill="${col}" d="M${x},${y+s*.35} C${x},${y+s*.08} ${x-s},${y-s*.28} ${x-s},${y} C${x-s},${y+s*.52} ${x},${y+s*.82} ${x},${y+s} C${x},${y+s*.82} ${x+s},${y+s*.52} ${x+s},${y} C${x+s},${y-s*.28} ${x},${y+s*.08} ${x},${y+s*.35}Z"/>`;
-}
+  resize();draw();window.addEventListener('resize',resize);
+})();
 
-function illCover(){
-  return flowerSVG(185,80,28,'#8b3810',.16)
-    + flowerSVG(60,70,16,'#8b3810',.12) + flowerSVG(310,70,16,'#8b3810',.12)
-    + flowerSVG(60,430,16,'#8b3810',.12) + flowerSVG(310,430,16,'#8b3810',.12)
-    + `<line x1="60" y1="168" x2="310" y2="168" stroke="#7a3010" stroke-width=".6" opacity=".2"/>
-       <rect x="183" y="165" width="5" height="5" fill="#7a3010" opacity=".4" transform="rotate(45 185 168)"/>
-       <line x1="60" y1="332" x2="310" y2="332" stroke="#7a3010" stroke-width=".6" opacity=".2"/>
-       <rect x="183" y="329" width="5" height="5" fill="#7a3010" opacity=".4" transform="rotate(45 185 332)"/>`;
-}
-function illMoon(){
-  return `<circle cx="310" cy="60" r="36" fill="#f7e8cc" opacity=".18"/>
-          <circle cx="322" cy="52" r="30" fill="#f0ddb0" opacity=".22"/>
-          <path d="M295,45 Q310,40 318,55 Q300,58 295,45Z" fill="#e0c88a" opacity=".12"/>`;
-}
-function illStarScatter(){
-  const pts=[[40,35],[330,28],[350,80],[25,120],[355,350],[30,400],[340,450],[180,22],[185,478]];
-  return pts.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="${(.5+Math.random()*.6).toFixed(2)}" fill="#ffe8c0" opacity="${(.3+Math.random()*.4).toFixed(2)}"/>`).join('');
-}
-function illCandle(){
-  return `<g transform="translate(185,370)">
-    <rect x="-5" y="-38" width="10" height="38" rx="2" fill="#e8d090" opacity=".25"/>
-    <ellipse cx="0" cy="-38" rx="5" ry="8" fill="#ffcc66" opacity=".35"/>
-    <ellipse cx="0" cy="-38" rx="3" ry="5" fill="#ffeeaa" opacity=".4"/>
-    <ellipse cx="0" cy="-42" rx="1.5" ry="3" fill="#fff8cc" opacity=".5"/>
-    <ellipse cx="0" cy="-38" rx="18" ry="12" fill="#ffcc44" opacity=".07"/>
-  </g>`;
-}
-function illMoonWindow(){
-  return illMoon()
-    + `<rect x="130" y="30" width="110" height="140" rx="55" fill="none" stroke="#8b6030" stroke-width=".8" opacity=".15"/>
-       <line x1="185" y1="30" x2="185" y2="170" stroke="#8b6030" stroke-width=".6" opacity=".12"/>
-       <line x1="130" y1="100" x2="240" y2="100" stroke="#8b6030" stroke-width=".6" opacity=".12"/>`;
-}
-function illTwoFigures(){
-  return `<g opacity=".12" fill="#4a1008">
-    <circle cx="150" cy="390" r="14"/>
-    <path d="M136,405 Q150,420 164,405 L160,460 Q150,465 140,460Z"/>
-    <circle cx="220" cy="390" r="14"/>
-    <path d="M206,405 Q220,420 234,405 L230,460 Q220,465 210,460Z"/>
-    <path d="M164,415 Q185,408 206,415" stroke="#4a1008" stroke-width="1.5" fill="none" opacity=".8"/>
-  </g>`;
-}
-function illHearts(){
-  let h='';
-  [[100,60],[270,60],[50,250],[320,250],[100,440],[270,440],[185,28],[185,472]].forEach(([x,y])=>{
-    h+=heartSVG(x,y,11,'#c0406a',.12);
+// ─── Page background texture ────────────────────────────────────────────────
+function drawBg(cv,type){
+  const c=cv.getContext('2d'),W=cv.width,H=cv.height;
+  c.fillStyle=type==='cover'?'#f7e8cc':type==='finale'?'#fff0ec':'#fdf6e8';
+  c.fillRect(0,0,W,H);
+  // paper grain
+  const id=c.getImageData(0,0,W,H),d=id.data;
+  for(let i=0;i<d.length;i+=4){const n=(Math.random()-.5)*18;d[i]=clamp(d[i]+n);d[i+1]=clamp(d[i+1]+n*.88);d[i+2]=clamp(d[i+2]+n*.55)}
+  c.putImageData(id,0,0);
+  // vignette
+  const g=c.createRadialGradient(W/2,H/2,H*.2,W/2,H/2,H*.9);
+  g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,`rgba(50,18,4,${type==='cover'?.22:.1})`);
+  c.fillStyle=g;c.fillRect(0,0,W,H);
+  // border
+  c.strokeStyle='rgba(110,62,24,.28)';c.lineWidth=.9;c.strokeRect(20,20,W-40,H-40);
+  c.strokeStyle='rgba(110,62,24,.13)';c.lineWidth=.5;c.strokeRect(26,26,W-52,H-52);
+  // corner ornaments
+  [[20,20,0],[W-20,20,Math.PI/2],[W-20,H-20,Math.PI],[20,H-20,-Math.PI/2]].forEach(([x,y,a])=>{
+    c.save();c.translate(x,y);c.rotate(a);
+    c.strokeStyle='rgba(110,62,24,.5)';c.lineWidth=.9;
+    c.beginPath();c.moveTo(13,0);c.lineTo(0,0);c.lineTo(0,13);c.stroke();
+    c.fillStyle='rgba(110,62,24,.45)';c.save();c.rotate(Math.PI/4);c.fillRect(-2.2,-2.2,4.4,4.4);c.restore();
+    c.restore();
   });
-  h+=`<defs><radialGradient id="hg"><stop offset="0" stop-color="#ffb0c8" stop-opacity=".08"/><stop offset="1" stop-color="#ffb0c8" stop-opacity="0"/></radialGradient></defs>
-      <rect x="0" y="0" width="370" height="500" fill="url(#hg)"/>`;
-  return h;
 }
-function illLeaves(){
-  return `<g opacity=".1" fill="#5a2808">
-    <ellipse cx="50" cy="460" rx="22" ry="10" transform="rotate(-30 50 460)"/>
-    <ellipse cx="70" cy="445" rx="18" ry="8" transform="rotate(-20 70 445)"/>
-    <ellipse cx="310" cy="455" rx="22" ry="10" transform="rotate(30 310 455)"/>
-    <ellipse cx="295" cy="440" rx="18" ry="8" transform="rotate(20 295 440)"/>
-    <ellipse cx="50" cy="55" rx="16" ry="7" transform="rotate(25 50 55)"/>
-    <ellipse cx="320" cy="55" rx="16" ry="7" transform="rotate(-25 320 55)"/>
-  </g>`;
-}
-function illCornerFlowers(){
-  return flowerSVG(45,45,10,'#8b4020',.1) + flowerSVG(325,45,10,'#8b4020',.1)
-       + flowerSVG(45,455,10,'#8b4020',.1) + flowerSVG(325,455,10,'#8b4020',.1);
+function clamp(v){return Math.max(0,Math.min(255,v|0))}
+
+// ─── Canvas art helpers ─────────────────────────────────────────────────────
+function moon(c,x,y,r,a=.18){
+  c.save();c.globalAlpha=a;
+  c.fillStyle='#f0ddb0';c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill();
+  // crescent mask
+  c.globalCompositeOperation='destination-out';
+  c.fillStyle='rgba(0,0,0,1)';c.beginPath();c.arc(x+r*.35,y-r*.15,r*.82,0,Math.PI*2);c.fill();
+  c.globalCompositeOperation='source-over';
+  c.restore();
 }
 
-const illMap = {
-  '0L': ()=>'',
-  '0R': illCover,
-  '1L': ()=>illStarScatter()+illLeaves(),
-  '1R': ()=>illMoon()+illStarScatter(),
-  '2L': ()=>illMoon()+illStarScatter()+illCandle(),
-  '2R': ()=>illCornerFlowers()+illStarScatter(),
-  '3L': ()=>illMoonWindow()+illStarScatter(),
-  '3R': ()=>illCornerFlowers()+illStarScatter(),
-  '4L': ()=>illCornerFlowers()+illStarScatter(),
-  '4R': ()=>illTwoFigures()+illStarScatter(),
-  '5L': ()=>illMoon()+illStarScatter(),
-  '5R': ()=>illCornerFlowers()+illStarScatter(),
-  '6L': ()=>illCornerFlowers()+illCandle(),
-  '6R': ()=>illTwoFigures()+illStarScatter(),
-  '7L': ()=>illCornerFlowers()+illStarScatter(),
-  '7R': illHearts,
+function star(c,x,y,r,a=.45){
+  c.save();c.globalAlpha=a;c.fillStyle='#ffe8c0';
+  c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill();c.restore();
+}
+
+function scatterStars(c,W,H,n=14){
+  const pts=[[.12,.07],[.88,.05],[.94,.2],[.06,.32],[.97,.88],[.05,.8],[.9,.91],[.5,.04],[.5,.96],[.78,.15],[.22,.88],[.04,.55],[.96,.55],[.6,.08]];
+  for(let i=0;i<Math.min(n,pts.length);i++)star(c,pts[i][0]*W,pts[i][1]*H,Math.random()*.5+.4,.25+Math.random()*.35);
+}
+
+function flower(c,x,y,r,col='#8b3810',a=.12){
+  c.save();c.globalAlpha=a;c.fillStyle=col;
+  for(let i=0;i<6;i++){c.save();c.translate(x,y);c.rotate(i*Math.PI/3);c.beginPath();c.ellipse(r*.62,0,r*.4,r*.2,0,0,Math.PI*2);c.fill();c.restore()}
+  c.beginPath();c.arc(x,y,r*.26,0,Math.PI*2);c.fill();c.restore();
+}
+
+function cornerFlowers(c,W,H){
+  [[45,45],[W-45,45],[45,H-45],[W-45,H-45]].forEach(([x,y])=>flower(c,x,y,9,'#8b4020',.11));
+}
+
+function drawHeart(c,x,y,s,col='#c0406a',a=.18){
+  c.save();c.globalAlpha=a;c.fillStyle=col;c.beginPath();
+  c.moveTo(x,y+s*.35);c.bezierCurveTo(x,y+s*.08,x-s,y-s*.28,x-s,y);
+  c.bezierCurveTo(x-s,y+s*.52,x,y+s*.82,x,y+s);
+  c.bezierCurveTo(x,y+s*.82,x+s,y+s*.52,x+s,y);
+  c.bezierCurveTo(x+s,y-s*.28,x,y+s*.08,x,y+s*.35);c.fill();c.restore();
+}
+
+function candle(c,x,y,scale=1){
+  c.save();c.translate(x,y);c.scale(scale,scale);
+  // flame glow
+  c.save();c.globalAlpha=.06;
+  const g=c.createRadialGradient(0,-30,2,0,-20,28);g.addColorStop(0,'#ffdd44');g.addColorStop(1,'transparent');
+  c.fillStyle=g;c.beginPath();c.arc(0,-20,28,0,Math.PI*2);c.fill();c.restore();
+  // candle body
+  c.save();c.globalAlpha=.28;c.fillStyle='#e8d090';c.beginPath();c.roundRect(-6,0,12,36,2);c.fill();c.restore();
+  // wax drip
+  c.save();c.globalAlpha=.18;c.fillStyle='#e8d090';c.beginPath();c.ellipse(-6,8,3,6,-.3,0,Math.PI*2);c.fill();c.restore();
+  // flame layers
+  c.save();c.globalAlpha=.45;c.fillStyle='#ff8822';c.beginPath();c.ellipse(0,-10,5,14,.1,0,Math.PI*2);c.fill();c.restore();
+  c.save();c.globalAlpha=.55;c.fillStyle='#ffcc44';c.beginPath();c.ellipse(0,-13,3.5,10,.05,0,Math.PI*2);c.fill();c.restore();
+  c.save();c.globalAlpha=.6;c.fillStyle='#fff8cc';c.beginPath();c.ellipse(0,-16,1.8,6,0,0,Math.PI*2);c.fill();c.restore();
+  c.restore();
+}
+
+// Couple silhouette sitting close
+function couple(c,cx,cy,scale=1,a=.13){
+  c.save();c.translate(cx,cy);c.scale(scale,scale);c.globalAlpha=a;c.fillStyle='#3a0e06';
+  // person 1 (left)
+  c.beginPath();c.arc(-22,-70,11,0,Math.PI*2);c.fill(); // head
+  c.beginPath();c.moveTo(-33,-60);c.bezierCurveTo(-36,-40,-32,-10,-28,0);c.lineTo(-16,0);c.bezierCurveTo(-12,-10,-8,-40,-11,-60);c.closePath();c.fill(); // body
+  // arm reaching
+  c.beginPath();c.moveTo(-16,-45);c.quadraticCurveTo(0,-38,12,-42);c.lineWidth=4;c.strokeStyle='#3a0e06';c.stroke();
+  // hair
+  c.save();c.globalAlpha=a*1.2;c.fillStyle='#2a0a04';
+  c.beginPath();c.arc(-22,-78,7,Math.PI,Math.PI*2);c.fill();
+  c.beginPath();c.ellipse(-29,-74,5,8,-0.4,0,Math.PI*2);c.fill();
+  c.restore();
+  // person 2 (right) leaning on shoulder
+  c.beginPath();c.arc(22,-65,11,0,Math.PI*2);c.fill(); // head tilted
+  c.save();c.translate(22,-65);c.rotate(.22);c.restore();
+  c.beginPath();c.moveTo(11,-55);c.bezierCurveTo(8,-35,12,-10,16,0);c.lineTo(28,0);c.bezierCurveTo(32,-10,36,-35,33,-55);c.closePath();c.fill();
+  // head leaning on shoulder
+  c.save();c.globalAlpha=a*1.4;c.fillStyle='#2a0a04';
+  c.beginPath();c.ellipse(22,-72,5,9,-.3,0,Math.PI*2);c.fill();
+  c.restore();
+  c.restore();
+}
+
+// Phone icon
+function phone(c,x,y,s,a=.14){
+  c.save();c.globalAlpha=a;
+  c.fillStyle='#2a0e06';c.strokeStyle='#2a0e06';
+  c.beginPath();c.roundRect(x-s*.35,y-s*.6,s*.7,s*1.2,s*.12);c.fill();
+  c.globalAlpha=a*.6;c.fillStyle='#c0a060';
+  c.beginPath();c.roundRect(x-s*.28,y-s*.48,s*.56,s*.78,s*.06);c.fill();
+  c.globalAlpha=a*.8;c.fillStyle='#2a0e06';
+  c.beginPath();c.arc(x,y+s*.48,s*.09,0,Math.PI*2);c.fill();
+  c.restore();
+}
+
+// Light bulb (off)
+function bulbOff(c,x,y,s,a=.15){
+  c.save();c.globalAlpha=a;
+  c.fillStyle='#5a3a1a';
+  c.beginPath();c.arc(x,y-s*.1,s*.38,0,Math.PI*2);c.fill();
+  // filament threads
+  c.strokeStyle='#5a3a1a';c.lineWidth=s*.06;
+  c.beginPath();c.moveTo(x-s*.22,y+s*.22);c.lineTo(x-s*.22,y+s*.45);c.stroke();
+  c.beginPath();c.moveTo(x+s*.22,y+s*.22);c.lineTo(x+s*.22,y+s*.45);c.stroke();
+  c.beginPath();c.roundRect(x-s*.18,y+s*.38,s*.36,s*.18,s*.04);c.fill();
+  c.restore();
+}
+
+// Glowing light bulb
+function bulbOn(c,x,y,s,a=.2){
+  c.save();
+  // glow
+  c.globalAlpha=a*.4;
+  const g=c.createRadialGradient(x,y,0,x,y,s*.9);g.addColorStop(0,'#ffe88a');g.addColorStop(1,'transparent');
+  c.fillStyle=g;c.beginPath();c.arc(x,y,s*.9,0,Math.PI*2);c.fill();
+  c.globalAlpha=a;
+  c.fillStyle='#f5d860';
+  c.beginPath();c.arc(x,y-s*.1,s*.38,0,Math.PI*2);c.fill();
+  c.globalAlpha=a*.9;c.fillStyle='#fff8aa';
+  c.beginPath();c.arc(x-s*.1,y-s*.22,s*.16,0,Math.PI*2);c.fill(); // highlight
+  c.strokeStyle='#c8a020';c.lineWidth=s*.06;
+  c.beginPath();c.moveTo(x-s*.22,y+s*.22);c.lineTo(x-s*.22,y+s*.45);c.stroke();
+  c.beginPath();c.moveTo(x+s*.22,y+s*.22);c.lineTo(x+s*.22,y+s*.45);c.stroke();
+  c.globalAlpha=a;c.fillStyle='#c8a020';
+  c.beginPath();c.roundRect(x-s*.18,y+s*.38,s*.36,s*.18,s*.04);c.fill();
+  c.restore();
+}
+
+// Crescent moon (simple)
+function moonSimple(c,x,y,s,a=.2){
+  c.save();c.globalAlpha=a;
+  c.fillStyle='#e8d080';
+  c.beginPath();c.arc(x,y,s,0,Math.PI*2);c.fill();
+  c.globalCompositeOperation='destination-out';
+  c.fillStyle='rgba(0,0,0,1)';
+  c.beginPath();c.arc(x+s*.4,y-s*.18,s*.78,0,Math.PI*2);c.fill();
+  c.globalCompositeOperation='source-over';
+  c.restore();
+}
+
+// Window with moonlight
+function windowMoon(c,x,y,W,H,a=.14){
+  c.save();c.globalAlpha=a;
+  // frame
+  c.strokeStyle='#6a3810';c.lineWidth=2;
+  c.beginPath();c.roundRect(x,y,W,H,W*.45+' '+W*.45+' 0 0');c.stroke();
+  c.beginPath();c.moveTo(x+W/2,y);c.lineTo(x+W/2,y+H);c.stroke();
+  c.beginPath();c.moveTo(x,y+H*.48);c.lineTo(x+W,y+H*.48);c.stroke();
+  // moonlight spill
+  c.globalAlpha=a*.5;
+  const g=c.createLinearGradient(x+W/2,y,x+W/2,y+H);g.addColorStop(0,'rgba(240,220,140,.18)');g.addColorStop(1,'rgba(240,220,140,0)');
+  c.fillStyle=g;c.beginPath();c.roundRect(x,y,W,H,W*.45+' '+W*.45+' 0 0');c.fill();
+  c.restore();
+}
+
+// Two chat bubbles
+function chatBubbles(c,x,y,s,a=.14){
+  c.save();c.globalAlpha=a;
+  // left bubble
+  c.fillStyle='#8b3810';c.beginPath();
+  c.roundRect(x-s*1.2,y-s*.3,s*1.1,s*.6,s*.18);c.fill();
+  c.beginPath();c.moveTo(x-s*.9,y+s*.28);c.lineTo(x-s*.7,y+s*.55);c.lineTo(x-s*.55,y+s*.28);c.fill();
+  // right bubble
+  c.fillStyle='#6a2808';c.beginPath();
+  c.roundRect(x+s*.1,y+s*.3,s*1.1,s*.6,s*.18);c.fill();
+  c.beginPath();c.moveTo(x+s*.4,y+s*.88);c.lineTo(x+s*.6,y+s*.58);c.lineTo(x+s*.75,y+s*.88);c.fill();
+  c.restore();
+}
+
+// Leaf sprig
+function sprig(c,x,y,dir=1,a=.1){
+  c.save();c.globalAlpha=a;c.strokeStyle='#6a3010';c.fillStyle='#7a3810';c.lineWidth=1;
+  c.save();c.translate(x,y);c.scale(dir,1);
+  c.beginPath();c.moveTo(0,0);c.quadraticCurveTo(20,-20,36,-12);c.stroke();
+  [[10,-8,-.4],[20,-16,-.3],[30,-14,-.2]].forEach(([lx,ly,rot])=>{
+    c.save();c.translate(lx,ly);c.rotate(rot);c.beginPath();c.ellipse(0,-7,5,10,0,0,Math.PI*2);c.fill();c.restore();
+  });
+  c.restore();c.restore();
+}
+
+// ─── Per-spread illustrations ────────────────────────────────────────────────
+const ART = {
+
+  // Spread 0 Left: blank/endpaper — subtle floral
+  '0L'(c,W,H){
+    scatterStars(c,W,H,8);
+    cornerFlowers(c,W,H);
+    flower(c,W*.5,H*.5,22,'#8b3810',.06);
+  },
+
+  // Spread 0 Right: cover — ornate decoration
+  '0R'(c,W,H){
+    scatterStars(c,W,H,6);
+    // large center flower
+    flower(c,W*.5,H*.18,28,'#8b3810',.16);
+    // four corner flowers
+    [[W*.18,H*.18],[W*.82,H*.18],[W*.18,H*.82],[W*.82,H*.82]].forEach(([x,y])=>flower(c,x,y,16,'#8b3810',.12));
+    // horizontal rules
+    [[H*.36],[H*.64]].forEach(([y])=>{
+      c.save();c.globalAlpha=.18;c.strokeStyle='#7a3010';c.lineWidth=.6;
+      c.beginPath();c.moveTo(W*.18,y);c.lineTo(W*.82,y);c.stroke();
+      c.fillStyle='#7a3010';c.save();c.translate(W/2,y);c.rotate(Math.PI/4);c.fillRect(-3,-3,6,6);c.restore();
+      c.restore();
+    });
+    // tiny hearts at bottom
+    [W*.3,W*.5,W*.7].forEach(x=>drawHeart(c,x,H*.88,8,'#8b3010',.14));
+  },
+
+  // Spread 1 Left: "Once upon a time, there were Avni and Rana…" — two small figures
+  '1L'(c,W,H){
+    scatterStars(c,W,H);
+    moonSimple(c,W*.8,H*.12,30,.2);
+    cornerFlowers(c,W,H);
+    couple(c,W*.5,H*.72,1.1,.15);
+    sprig(c,40,H-40,1,.12);sprig(c,W-40,H-40,-1,.12);
+  },
+
+  // Spread 1 Right: "Every night… just to be close." — cozy candle, couple
+  '1R'(c,W,H){
+    scatterStars(c,W,H);
+    moonSimple(c,W*.15,H*.1,24,.17);
+    cornerFlowers(c,W,H);
+    candle(c,W*.5,H*.62,1.2);
+    couple(c,W*.5,H*.75,.9,.13);
+  },
+
+  // Spread 2 Left: "the lights went out" — dark, candle unlit, bulb off
+  '2L'(c,W,H){
+    scatterStars(c,W,H);
+    moonSimple(c,W*.5,H*.1,28,.18);
+    cornerFlowers(c,W,H);
+    bulbOff(c,W*.5,H*.67,36,.18);
+    chatBubbles(c,W*.5,H*.78,18,.12);
+  },
+
+  // Spread 2 Right: "Stay… like this." — phone being set down
+  '2R'(c,W,H){
+    scatterStars(c,W,H);
+    moonSimple(c,W*.82,H*.1,22,.16);
+    cornerFlowers(c,W,H);
+    phone(c,W*.5,H*.68,32,.16);
+    // small hand reaching to cover it
+    c.save();c.globalAlpha=.13;c.strokeStyle='#3a0e06';c.lineWidth=2.5;c.lineCap='round';
+    c.beginPath();c.moveTo(W*.3,H*.62);c.quadraticCurveTo(W*.4,H*.58,W*.48,H*.63);c.stroke();
+    c.restore();
+  },
+
+  // Spread 3 Left: "Moonlight filled the room" — window with moonbeam
+  '3L'(c,W,H){
+    scatterStars(c,W,H);
+    moonSimple(c,W*.8,H*.12,24,.22);
+    cornerFlowers(c,W,H);
+    windowMoon(c,W*.33,H*.1,W*.34,H*.38,.18);
+    // moonbeam
+    c.save();c.globalAlpha=.07;
+    const g=c.createLinearGradient(W*.5,H*.48,W*.5,H*.9);g.addColorStop(0,'#e8d890');g.addColorStop(1,'transparent');
+    c.fillStyle=g;c.beginPath();c.moveTo(W*.36,H*.48);c.lineTo(W*.64,H*.48);c.lineTo(W*.72,H*.9);c.lineTo(W*.28,H*.9);c.closePath();c.fill();
+    c.restore();
+  },
+
+  // Spread 3 Right: "I just love being with you." — two hearts
+  '3R'(c,W,H){
+    scatterStars(c,W,H);
+    moonSimple(c,W*.15,H*.08,20,.16);
+    cornerFlowers(c,W,H);
+    drawHeart(c,W*.34,H*.64,18,'#c0406a',.22);
+    drawHeart(c,W*.56,H*.68,14,'#8b3010',.18);
+    // connecting line
+    c.save();c.globalAlpha=.12;c.strokeStyle='#c0406a';c.lineWidth=1;c.setLineDash([3,4]);
+    c.beginPath();c.moveTo(W*.37,H*.7);c.quadraticCurveTo(W*.5,H*.85,W*.62,H*.74);c.stroke();
+    c.restore();
+  },
+
+  // Spread 4 Left: "They talked… laughed… world faded away." — chat bubbles
+  '4L'(c,W,H){
+    scatterStars(c,W,H);
+    moonSimple(c,W*.82,H*.08,22,.15);
+    cornerFlowers(c,W,H);
+    chatBubbles(c,W*.5,H*.66,26,.16);
+    // small laugh lines
+    c.save();c.globalAlpha=.1;c.strokeStyle='#8b3010';c.lineWidth=1.2;c.lineCap='round';
+    [[W*.28,H*.58],[W*.72,H*.62],[W*.38,H*.78]].forEach(([x,y])=>{
+      c.beginPath();c.arc(x,y,6,-.4,.4);c.stroke();
+    });
+    c.restore();
+  },
+
+  // Spread 4 Right: "Rana rested his head on her shoulder." — couple close
+  '4R'(c,W,H){
+    scatterStars(c,W,H);
+    moonSimple(c,W*.2,H*.1,26,.2);
+    cornerFlowers(c,W,H);
+    couple(c,W*.5,H*.74,1.15,.17);
+    candle(c,W*.22,H*.7,.75);
+    candle(c,W*.78,H*.7,.75);
+  },
+
+  // Spread 5 Left: "If the lights never come back…" — dark, off bulb, moon
+  '5L'(c,W,H){
+    scatterStars(c,W,H);
+    moonSimple(c,W*.5,H*.1,32,.22);
+    cornerFlowers(c,W,H);
+    bulbOff(c,W*.5,H*.68,38,.2);
+  },
+
+  // Spread 5 Right: "Me too, Avni whispered." — two tiny hearts merging
+  '5R'(c,W,H){
+    scatterStars(c,W,H);
+    moonSimple(c,W*.82,H*.12,20,.15);
+    cornerFlowers(c,W,H);
+    drawHeart(c,W*.38,H*.68,20,'#c0406a',.2);
+    drawHeart(c,W*.52,H*.68,20,'#8b2810',.16);
+    c.save();c.globalAlpha=.1;
+    const g=c.createRadialGradient(W*.48,H*.72,0,W*.48,H*.72,40);g.addColorStop(0,'#ffd0d8');g.addColorStop(1,'transparent');
+    c.fillStyle=g;c.beginPath();c.arc(W*.48,H*.72,40,0,Math.PI*2);c.fill();c.restore();
+  },
+
+  // Spread 6 Left: "The lights returned…" — bulb glowing
+  '6L'(c,W,H){
+    scatterStars(c,W,H,8);
+    moonSimple(c,W*.18,H*.1,18,.12);
+    cornerFlowers(c,W,H);
+    bulbOn(c,W*.5,H*.66,40,.22);
+  },
+
+  // Spread 6 Right: "But they didn't move. Some moments feel like forever." — couple, candles
+  '6R'(c,W,H){
+    scatterStars(c,W,H,10);
+    moonSimple(c,W*.82,H*.1,20,.15);
+    cornerFlowers(c,W,H);
+    couple(c,W*.5,H*.72,1.1,.16);
+    candle(c,W*.2,H*.68,.9);candle(c,W*.8,H*.68,.9);
+    // soft glow under couple
+    c.save();c.globalAlpha=.07;
+    const g=c.createRadialGradient(W*.5,H*.82,0,W*.5,H*.82,60);g.addColorStop(0,'#ffcc66');g.addColorStop(1,'transparent');
+    c.fillStyle=g;c.beginPath();c.arc(W*.5,H*.82,60,0,Math.PI*2);c.fill();c.restore();
+  },
+
+  // Spread 7 Left: "Same time tomorrow?" — small clock / moon waxing
+  '7L'(c,W,H){
+    scatterStars(c,W,H);
+    moonSimple(c,W*.5,H*.14,34,.25);
+    cornerFlowers(c,W,H);
+    // simple clock face
+    c.save();c.globalAlpha=.15;
+    c.strokeStyle='#6a3010';c.lineWidth=1.5;
+    c.beginPath();c.arc(W*.5,H*.68,22,0,Math.PI*2);c.stroke();
+    // hands pointing to "tomorrow" — ~11:58
+    c.lineWidth=2;c.lineCap='round';
+    c.beginPath();c.moveTo(W*.5,H*.68);c.lineTo(W*.5,H*.68-16);c.stroke(); // minute near 12
+    c.lineWidth=1.5;
+    c.beginPath();c.moveTo(W*.5,H*.68);c.lineTo(W*.5+8,H*.68-10);c.stroke(); // hour ~2
+    c.restore();
+    sprig(c,38,H-42,1,.12);sprig(c,W-38,H-42,-1,.12);
+  },
+
+  // Spread 7 Right: "Always." — hearts, flowers, glow
+  '7R'(c,W,H){
+    // rosy background glow
+    c.save();c.globalAlpha=.08;
+    const g=c.createRadialGradient(W*.5,H*.5,0,W*.5,H*.5,W*.6);g.addColorStop(0,'#ffb0c8');g.addColorStop(1,'transparent');
+    c.fillStyle=g;c.beginPath();c.arc(W*.5,H*.5,W*.6,0,Math.PI*2);c.fill();c.restore();
+    // scattered hearts
+    [[W*.28,H*.2],[W*.72,H*.2],[W*.15,H*.5],[W*.85,H*.5],[W*.28,H*.8],[W*.72,H*.8],[W*.5,H*.1],[W*.5,H*.9]].forEach(([x,y])=>drawHeart(c,x,y,11,'#c0406a',.14));
+    // center large heart
+    drawHeart(c,W*.5,H*.5,28,'#c0406a',.12);
+    cornerFlowers(c,W,H);
+    scatterStars(c,W,H,12);
+  },
 };
 
-// ── Spreads ────────────────────────────────────────────────
-const S = [
+// ─── Draw art onto canvas ────────────────────────────────────────────────────
+function drawArt(cv,si,side){
+  const key=`${si}${side}`;
+  const c=cv.getContext('2d');
+  c.clearRect(0,0,cv.width,cv.height);
+  if(ART[key]) ART[key](c,cv.width,cv.height);
+}
+
+// ─── Spread content ──────────────────────────────────────────────────────────
+const S=[
   {
-    L:{h:''},
-    R:{type:'cover', h:`<div class="cover-title"><em>Avni</em> &amp; <em>Rana</em></div><div class="divider"></div><div class="cover-sub">A Love Story</div>`},
+    L:{type:'story',h:''},
+    R:{type:'cover',h:`<div class="cover-title"><em>Avni</em> &amp; <em>Rana</em></div><div class="divider"></div><div class="cover-sub">A Love Story</div>`},
     n:['','']
   },
   {
-    L:{h:`<div class="story">Once upon a time,<br>in a soft quiet world,<br>there were <em>Avni</em> and <em>Rana</em>…</div>`},
-    R:{h:`<div class="story">Every night, they found<br>a cozy little place…<span class="gap"></span>just to be close.</div>`},
+    L:{type:'story',h:`<div class="story">Once upon a time,<br>in a soft quiet world,<br>there were <em>Avni</em> and <em>Rana</em>…</div>`},
+    R:{type:'story',h:`<div class="story">Every night, they found<br>a cozy little place…<span class="gap"></span>just to be close.</div>`},
     n:['i','ii']
   },
   {
-    L:{h:`<div class="story">One night,<br>the lights went out…<span class="gap"></span><em>"Guess it's just us now,"</em><br><em>Rana said softly.</em></div>`},
-    R:{h:`<div class="story">Avni reached for her phone,<br>but he gently stopped her.<span class="gap"></span><em>"Stay… like this."</em></div>`},
+    L:{type:'story',h:`<div class="story">One night,<br>the lights went out…<span class="gap"></span><em>"Guess it's just us now,"</em><br><em>Rana said softly.</em></div>`},
+    R:{type:'story',h:`<div class="story">Avni reached for her phone,<br>but he gently stopped her.<span class="gap"></span><em>"Stay… like this."</em></div>`},
     n:['iii','iv']
   },
   {
-    L:{h:`<div class="story">Moonlight filled the room.<span class="gap"></span><em>"What?"</em> she asked.</div>`},
-    R:{h:`<div class="story"><em>"Nothing…</em><span class="gap"></span><em>I just love</em><br><em>being with you."</em></div>`},
+    L:{type:'story',h:`<div class="story">Moonlight filled the room.<span class="gap"></span><em>"What?"</em> she asked.</div>`},
+    R:{type:'story',h:`<div class="story"><em>"Nothing…</em><span class="gap"></span><em>I just love</em><br><em>being with you."</em></div>`},
     n:['v','vi']
   },
   {
-    L:{h:`<div class="story">They talked… laughed…<span class="gap"></span>and slowly, the world<br>faded away.</div>`},
-    R:{h:`<div class="story">Rana rested his head<br>on her shoulder.</div>`},
+    L:{type:'story',h:`<div class="story">They talked… laughed…<span class="gap"></span>and slowly, the world<br>faded away.</div>`},
+    R:{type:'story',h:`<div class="story">Rana rested his head<br>on her shoulder.</div>`},
     n:['vii','viii']
   },
   {
-    L:{h:`<div class="story"><em>"If the lights<br>never come back…"</em><span class="gap"></span><em>"I'd still be okay."</em></div>`},
-    R:{h:`<div class="story"><em>"Me too,"</em><span class="gap"></span>Avni whispered.</div>`},
+    L:{type:'story',h:`<div class="story"><em>"If the lights<br>never come back…"</em><span class="gap"></span><em>"I'd still be okay."</em></div>`},
+    R:{type:'story',h:`<div class="story"><em>"Me too,"</em><span class="gap"></span>Avni whispered.</div>`},
     n:['ix','x']
   },
   {
-    L:{h:`<div class="story">The lights returned…</div>`},
-    R:{h:`<div class="story">But they didn't move.<span class="gap"></span>Because some moments<br>feel like forever.</div>`},
+    L:{type:'story',h:`<div class="story">The lights returned…</div>`},
+    R:{type:'story',h:`<div class="story">But they didn't move.<span class="gap"></span>Because some moments<br>feel like forever.</div>`},
     n:['xi','xii']
   },
   {
-    L:{h:`<div class="story"><em>"Same time tomorrow?"</em></div>`},
-    R:{type:'finale', h:`<div class="finale">Always.</div>`},
+    L:{type:'story',h:`<div class="story"><em>"Same time tomorrow?"</em></div>`},
+    R:{type:'finale',h:`<div class="finale">Always.</div>`},
     n:['xiii','']
   }
 ];
 
-// ── DOM refs ───────────────────────────────────────────────
+// ─── DOM ─────────────────────────────────────────────────────────────────────
 const prw=document.getElementById('prw');
-const cvL=document.getElementById('cvL'), cvF=document.getElementById('cvF'), cvB=document.getElementById('cvB');
-const ilL=document.getElementById('ilL'), ilF=document.getElementById('ilF'), ilB=document.getElementById('ilB');
-const ctL=document.getElementById('ctL'), ctF=document.getElementById('ctF'), ctB=document.getElementById('ctB');
-const nmL=document.getElementById('nmL'), nmF=document.getElementById('nmF');
-const bPrev=document.getElementById('bPrev'), bNext=document.getElementById('bNext');
-const nind=document.getElementById('nind');
-let cur=0, busy=false;
+const bgL=document.getElementById('bgL'),bgF=document.getElementById('bgF'),bgB=document.getElementById('bgB');
+const artL=document.getElementById('artL'),artF=document.getElementById('artF'),artB=document.getElementById('artB');
+const ctL=document.getElementById('ctL'),ctF=document.getElementById('ctF'),ctB=document.getElementById('ctB');
+const nmL=document.getElementById('nmL'),nmF=document.getElementById('nmF');
+const bPrev=document.getElementById('bPrev'),bNext=document.getElementById('bNext'),nind=document.getElementById('nind');
+let cur=0,busy=false;
 
-function getIll(si, side){ const fn=illMap[`${si}${side}`]; return fn?fn():''; }
-
-function renderPage(cv, il, ct, nm, side, si, sideKey){
-  drawTex(cv, side.type||'story');
-  il.innerHTML = getIll(si, sideKey);
-  ct.innerHTML = side.h;
-  if(nm) nm.textContent='';
+function renderSide(bg,art,ct,nm,side,si,artKey){
+  drawBg(bg,side.type||'story');
+  drawArt(art,si,artKey);
+  ct.innerHTML=side.h;
+  if(nm) nm.textContent=side.n||'';
 }
 
-function preloadBack(si){
+function loadBack(si){
   if(si<S.length){
-    const nx=S[si];
-    drawTex(cvB, nx.L.type||'story');
-    ilB.innerHTML=getIll(si,'L');
-    ctB.innerHTML=nx.L.h;
+    const s=S[si];
+    drawBg(bgB,s.L.type||'story');
+    drawArt(artB,si,'L');
+    ctB.innerHTML=s.L.h;
   }
 }
 
 function render(){
   const s=S[cur];
-  renderPage(cvL,ilL,ctL,nmL,s.L,cur,'L');
-  renderPage(cvF,ilF,ctF,nmF,s.R,cur,'R');
-  preloadBack(cur+1);
+  drawBg(bgL,s.L.type||'story');drawArt(artL,cur,'L');ctL.innerHTML=s.L.h;nmL.textContent=s.n[0];
+  drawBg(bgF,s.R.type||'story');drawArt(artF,cur,'R');ctF.innerHTML=s.R.h;nmF.textContent=s.n[1];
+  loadBack(cur+1);
   nind.textContent=`${cur+1} / ${S.length}`;
-  bPrev.disabled=cur===0; bNext.disabled=cur===S.length-1;
+  bPrev.disabled=cur===0;bNext.disabled=cur===S.length-1;
 }
 
 function go(dir){
-  if(busy) return;
-  if(dir===1&&cur>=S.length-1) return;
-  if(dir===-1&&cur<=0) return;
-  busy=true; bPrev.disabled=true; bNext.disabled=true;
+  if(busy)return;
+  if(dir===1&&cur>=S.length-1)return;
+  if(dir===-1&&cur<=0)return;
+  busy=true;bPrev.disabled=true;bNext.disabled=true;
 
   if(dir===1){
-    preloadBack(cur+1);
+    loadBack(cur+1);
     prw.classList.add('go','flipped');
     setTimeout(()=>{
       cur++;
       const s=S[cur];
-      renderPage(cvL,ilL,ctL,nmL,s.L,cur,'L');
-      renderPage(cvF,ilF,ctF,nmF,s.R,cur,'R');
-      preloadBack(cur+1);
+      drawBg(bgL,s.L.type||'story');drawArt(artL,cur,'L');ctL.innerHTML=s.L.h;nmL.textContent=s.n[0];
+      drawBg(bgF,s.R.type||'story');drawArt(artF,cur,'R');ctF.innerHTML=s.R.h;nmF.textContent=s.n[1];
+      loadBack(cur+1);
       prw.classList.remove('go','flipped');
       nind.textContent=`${cur+1} / ${S.length}`;
-      bPrev.disabled=cur===0; bNext.disabled=cur===S.length-1;
+      bPrev.disabled=cur===0;bNext.disabled=cur===S.length-1;
       busy=false;
     },1520);
   } else {
-    const prev=S[cur-1];
-    renderPage(cvF,ilF,ctF,nmF,prev.R,cur-1,'R');
-    drawTex(cvB,S[cur].L.type||'story');
-    ilB.innerHTML=getIll(cur,'L');
-    ctB.innerHTML=S[cur].L.h;
-    prw.classList.remove('go'); prw.classList.add('flipped');
+    const p=S[cur-1];
+    drawBg(bgF,p.R.type||'story');drawArt(artF,cur-1,'R');ctF.innerHTML=p.R.h;nmF.textContent=p.n[1];
+    drawBg(bgB,S[cur].L.type||'story');drawArt(artB,cur,'L');ctB.innerHTML=S[cur].L.h;
+    prw.classList.remove('go');prw.classList.add('flipped');
     void prw.offsetHeight;
-    renderPage(cvL,ilL,ctL,nmL,prev.L,cur-1,'L');
-    prw.classList.add('go'); prw.classList.remove('flipped');
+    drawBg(bgL,p.L.type||'story');drawArt(artL,cur-1,'L');ctL.innerHTML=p.L.h;nmL.textContent=p.n[0];
+    prw.classList.add('go');prw.classList.remove('flipped');
     setTimeout(()=>{
       cur--;
-      preloadBack(cur+1);
+      loadBack(cur+1);
       prw.classList.remove('go');
       nind.textContent=`${cur+1} / ${S.length}`;
-      bPrev.disabled=cur===0; bNext.disabled=cur===S.length-1;
+      bPrev.disabled=cur===0;bNext.disabled=cur===S.length-1;
       busy=false;
     },1520);
   }
 }
 
-bPrev.onclick=()=>go(-1);
-bNext.onclick=()=>go(1);
+document.getElementById('bPrev').onclick=()=>go(-1);
+document.getElementById('bNext').onclick=()=>go(1);
 render();
-})();
 </script>
 </body>
 </html>
